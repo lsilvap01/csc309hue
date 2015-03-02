@@ -16,7 +16,7 @@ $app->get('/', function () use ($app) {
 });
 
 $app->get('/login', function () use ($app) {
-    $app->render('login.php');
+    $app->render('login.php', array('appName' => $app->getName()));
 });
 
 $app->get('/hello/:name', function ($name) {
