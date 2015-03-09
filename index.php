@@ -19,6 +19,10 @@ $app->get('/login', function () use ($app) {
     $app->render('login.php', array('appName' => $app->getName()));
 });
 
+$app->get('/signup', function () use ($app) {
+    $app->render('signup.php', array('appName' => $app->getName()));
+});
+
 $app->post('/login', function () use ($app) {
 	$email = $app->request->post('email');
 	$password = $app->request->post('password');

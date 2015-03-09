@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Home || <? echo $this->data['appName']; ?></title>
+    <title>Home || <?php echo $this->data['appName']; ?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -35,7 +35,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#"><? echo $this->data['appName']; ?></a>
+          <a class="navbar-brand" href="#"><?php echo $this->data['appName']; ?></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <form class="navbar-form navbar-right">
@@ -46,6 +46,7 @@
               <input type="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-success">Sign in</button>
+            <a class="btn btn-success" href="./signup" role="button">Sign up</a>
           </form>
         </div><!--/.navbar-collapse -->
       </div>
@@ -56,7 +57,8 @@
       <div class="container">
         <h1>Hello, world!</h1>
         <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-        <p><a class="btn btn-primary btn-lg" href="./login" role="button">Learn more &raquo;</a></p>
+        <p><a class="btn btn-primary btn-lg" href="./login" role="button">Login &raquo;</a>
+        <a class="btn btn-primary btn-lg" href="./signup" role="button">Sign up &raquo;</a></p> 
       </div>
     </div>
 
