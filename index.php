@@ -4,7 +4,7 @@ require 'vendor/autoload.php';
 \Slim\Slim::registerAutoloader();
 
 $app = new \Slim\Slim();
-$app->setName('SynergySpace');
+$app->setName('Synergy Space');
 
 $app->config(array(
     'debug' => true,
@@ -19,9 +19,6 @@ $app->get('/login', function () use ($app) {
     $app->render('login.php', array('appName' => $app->getName()));
 });
 
-$app->get('/signup', function () use ($app) {
-    $app->render('signup.php', array('appName' => $app->getName()));
-});
 
 $app->post('/login', function () use ($app) {
 	$email = $app->request->post('email');
@@ -44,6 +41,19 @@ $app->post('/login', function () use ($app) {
     	echo $e;
        }
     //$app->render('login.php', array('appName' => $app->getName()));
+});
+
+$app->get('/signup', function () use ($app) {
+    $app->render('signup.php', array('appName' => $app->getName()));
+});
+
+$app->get('/about', function () use ($app) {
+    $app->render('about.php', array('appName' => $app->getName()));
+});
+
+$app->post('/signup', function () use ($app) {
+    $email = $app->request->post('email');
+    $password = $app->request->post('password');
 });
 
 $app->get('/hello/:name', function ($name) {

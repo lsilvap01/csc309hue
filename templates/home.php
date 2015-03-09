@@ -45,7 +45,7 @@
             <div class="form-group">
               <input type="password" placeholder="Password" class="form-control">
             </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
+            <button type="submit" class="btn btn-success">Log in</button>
             <a class="btn btn-success" href="./signup" role="button">Sign up</a>
           </form>
         </div><!--/.navbar-collapse -->
@@ -55,10 +55,11 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
-        <h1>Hello, world!</h1>
-        <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-        <p><a class="btn btn-primary btn-lg" href="./login" role="button">Login &raquo;</a>
-        <a class="btn btn-primary btn-lg" href="./signup" role="button">Sign up &raquo;</a></p> 
+        <h1>Synergy Space</h1>
+        <p>Here you find a place for your Job wherever you are.</p>
+        <p> Sign up to have the opportunity to join or create a coworking team  or just explore the available spaces.</p>
+        <p><a class="btn btn-primary btn-lg" href="./login" role="button">Log in</a>
+          <a class="btn btn-primary btn-lg" href="./signup" role="button">Sign up</a></p> 
       </div>
     </div>
 
@@ -66,14 +67,14 @@
       <!-- Example row of columns -->
       <div class="row">
         <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          <h2>Coworking Space</h2>
+          <p>Synergy Space is a coworking website for you to find the best place to work.  </p>
+          <p><a class="btn btn-default" href="./about" role="button">View details &raquo;</a></p>
         </div>
         <div class="col-md-4">
           <h2>Heading</h2>
           <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          <p><a class="btn btn-default" href="" role="button">View details &raquo;</a></p>
        </div>
         <div class="col-md-4">
           <h2>Heading</h2>
