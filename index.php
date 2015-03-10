@@ -1,6 +1,6 @@
 <?php
 require 'vendor/autoload.php';
-require 'utils.php'
+require 'utils.php';
 
 \Slim\Slim::registerAutoloader();
 
