@@ -11,8 +11,10 @@
     <title>Login || <?php echo $this->data['appName']; ?></title>
 
     <!-- Bootstrap core CSS -->
+
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://getbootstrap.com/examples/signin/signin.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/signin.css" rel="stylesheet">
 
     <!-- Custom styles for this template 
     <link href="jumbotron.css" rel="stylesheet">-->
@@ -36,7 +38,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#"><?php echo $this->data['appName']; ?></a>
+          <a class="navbar-brand" href="./"><?php echo $this->data['appName']; ?></a>
         </div>
 
       </div>
@@ -46,9 +48,9 @@
     <div class="container">
 
       <form class="form-signin" action="./login" method="post">
-        <h2 class="form-signin-heading">Please Sign in</h2>
+        <h2 class="form-signin-heading">Please Log in</h2>
         <label for="email" class="sr-only">Email address</label>
-        <input type="email" id="email" name="email" class="form-control" placeholder="Email address" required autofocus>
+        <input type="email" id="email" name="email" value="<?php echo $this->data['email']; ?>" class="form-control" placeholder="Email address" required autofocus>
         <label for="password" class="sr-only">Password</label>
         <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
         <div class="checkbox">
@@ -57,6 +59,7 @@
           </label>
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <?php if ($this->data['error']) { ?> <div id="login-alert" class="alert alert-danger col-sm-12"><?php echo $this->data['error']; ?></div> <?php } ?>
       </form>
 
     </div>
@@ -65,12 +68,6 @@
     </div> <!-- /container -->
 
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+    <?php include 'includes/jsFiles.php' ?>
   </body>
 </html>
