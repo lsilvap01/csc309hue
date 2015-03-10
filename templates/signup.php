@@ -49,7 +49,7 @@
 <fieldset>
 
 <!-- Form Name -->
-<legend>SingUp Form</legend>
+<h2>SingUp Form</h2>
 
 <!-- Text input-->
 <div class="control-group">
@@ -169,18 +169,13 @@
 <div class="control-group">
   <label class="control-label" for="button1"></label>
   <div class="controls">
-    <button id="button1" name="button1" class="btn btn-success">Send</button>
-    <button id="button2" name="button2" class="btn btn-danger">Cancel</button>
+    <button id="button1" name="button1" type="submit" class="btn btn-success">Send</button>
   </div>
 </div>
 
 </fieldset>
 </form>
-
-
-    </div>
-
-      
+</div>
     </div> <!-- /container -->
 
 

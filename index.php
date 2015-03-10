@@ -20,7 +20,6 @@ $app->get('/login', function () use ($app) {
     $app->render('login.php', array('appName' => $app->getName()));
 });
 
-
 $app->post('/login', function () use ($app) {
 	$email = $app->request->post('email');
 	$password = $app->request->post('password');
@@ -54,7 +53,45 @@ $app->get('/about', function () use ($app) {
 
 $app->post('/signup', function () use ($app) {
     $email = $app->request->post('email');
-    $password = $app->request->post('password');
+	$password = $app->request->post('password');
+	$passwordconf = $app->request->post('passwordconf');
+	$name = $app->request->post('fname') . $app->request->post('lname');
+	$gender = $app->request->post('select1');
+	$birthdate = $app->request->post('birthday');
+	$profession = $app->request->post('prof');
+	$professionalExperience = $app->request->post('profexp');
+	$professionalSkills = $app->request->post('profskills');
+	$selfDescription = $app->request->post('descript');
+	$fieldsOfInterest = $app->request->post('inter');
+	$address = $app->request->post('address');
+	$sql = "INSERT INTO `user`(`name`, `email`, `password`, `gender`, `birthdate`, `profession`, `professionalExperience`, `professionalSkills`, `selfDescription`, `fieldsOfInterest`, `address`) 
+	VALUES (name, email, password, gender, birthdate, profession, professionalExperience, professionalSkills, selfDescription, fieldsOfInterest, address)";
+    try {
+        $db = getConnection();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam("email", $email);
+        $stmt->bindParam("password", $password);
+		$stmt->bindParam("name", $name);
+		$stmt->bindParam("gender", $gender);
+		$stmt->bindParam("birthdate", $birthdate);
+		$stmt->bindParam("profession", $profession);
+		$stmt->bindParam("professionalExperience", $professionalExperience);
+		$stmt->bindParam("professionalSkills", $professionalSkills);
+		$stmt->bindParam("selfDescription", $selfDescription);
+		$stmt->bindParam("fieldsOfInterest", $fieldsOfInterest);
+		$stmt->bindParam("address", $address);
+        $stmt->execute();
+        $user = $stmt->fetchObject();
+        $db = null;
+        if ($user) {
+        	echo json_encode($user);
+        }
+        else
+        	echo 'erro';
+    } catch(PDOException $e) {
+    	echo $e;
+       }
+    //$app->render('login.php', array('appName' => $app->getName()));
 });
 
 $app->get('/hello/:name', function ($name) {
