@@ -20,7 +20,6 @@ $app->get('/login', function () use ($app) {
     $app->render('login.php', array('appName' => $app->getName()));
 });
 
-
 $app->post('/login', function () use ($app) {
 	$email = $app->request->post('email');
 	$password = $app->request->post('password');
@@ -122,7 +121,7 @@ $app->post('/signup', function () use ($app) {
                         ":password" => makeMD5($password),
                         ":gender" => $gender,
                         ":birthday" => $birthday));
-            $app->redirect("/");
+            $app->redirect("/csc309hue/");
             
         } catch(PDOException $e) {
             $app->render('signup.php', array('appName' => $app->getName(), 
