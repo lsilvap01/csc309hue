@@ -286,6 +286,9 @@ MODIFY `idUser` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 -- Constraints for dumped tables
 --
 
+ALTER TABLE `User` MODIFY `password` varchar(40) NOT NULL;
+ALTER TABLE `AdminUser` MODIFY `password` varchar(40) NOT NULL;
+
 --
 -- Constraints for table `CoworkingSpace`
 --
