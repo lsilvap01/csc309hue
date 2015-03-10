@@ -1,5 +1,6 @@
 <?php
 require 'vendor/autoload.php';
+require 'utils.php'
 
 \Slim\Slim::registerAutoloader();
 
@@ -28,7 +29,7 @@ $app->post('/login', function () use ($app) {
         $db = getConnection();
         $stmt = $db->prepare($sql);
         $stmt->bindParam("email", $email);
-        $stmt->bindParam("password", $password);
+        $stmt->bindParam("password", makekMD5($password));
         $stmt->execute();
         $user = $stmt->fetchObject();
         $db = null;
@@ -36,9 +37,9 @@ $app->post('/login', function () use ($app) {
         	echo json_encode($user);
         }
         else
-        	echo 'erro';
+        	$app->render('login.php', array('appName' => $app->getName(), 'error' => 'Invalid Email and/or Password.'));
     } catch(PDOException $e) {
-    	echo $e;
+    	$app->render('login.php', array('appName' => $app->getName(), 'error' => 'Something went wrong. Try again.'));
        }
     //$app->render('login.php', array('appName' => $app->getName()));
 });
