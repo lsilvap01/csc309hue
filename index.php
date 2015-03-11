@@ -72,6 +72,16 @@ $app->post('/newPlace', function () use ($app) {
     
     $leaseAgreement = $app->request->post('leaseAgreement');
 
+    $photo = $app->request->post('photo');
+    if(isset($_FILES['photo']))
+    {
+        $ext = strtolower(substr($_FILES['photo']['name'],-4)); //Pegando extensão do arquivo
+        $new_name = $name . $ext; //Definindo um novo nome para o arquivo
+        $dir = 'uploads/'; //Diretório para uploads
+     
+        move_uploaded_file($_FILES['photo']['tmp_name'], $dir.$new_name); //Fazer upload do arquivo
+    }
+
     if(empty($err))
     {
         $sql = "INSERT INTO CoworkingSpace(address, availableVacancies, description, leaseAgreement, name, price) VALUES(:address, :availableVacancies, :description, :leaseAgreement, :name, :price)";
