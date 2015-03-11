@@ -54,6 +54,7 @@
             <button type="submit" class="btn btn-success">Log in</button>
             <a class="btn btn-success" href="./signup" role="button">Sign up</a>
           </form>
+          <?php } ?>
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
@@ -61,7 +62,7 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
-        <h1>Synergy Space<?php if($logado) echo ": Logado como " . $_SESSION["email"] ?></h1>
+        <h1>Synergy Space<?php if($logado) { echo ": Logado como " . $_SESSION["email"]; } ?></h1>
         <p>Here you find a place for your Job wherever you are.</p>
         <p> Sign up to have the opportunity to join or create a coworking team  or just explore the available spaces.</p>
         <p><a class="btn btn-primary btn-lg" href="./login" role="button">Log in</a>
