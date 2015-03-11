@@ -19,7 +19,7 @@ $app->get('/', function () use ($app) {
 });
 
 $app->get('/newPlace', function () use ($app) {
-    $app->render('newPlace.php', array('appName' => $app->getName()));
+    $app->render('newPlace.php', array('appName' => $app->getName(), "restricted" => true));
 });
 
 $app->get('/login', function () use ($app) {

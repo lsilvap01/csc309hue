@@ -1,5 +1,4 @@
-
-<?php session_start(); ?>
+<?php include 'includes/sessionConfig.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -40,7 +39,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <?php 
-            if($_SESSION) {
+            if($logado) {
               echo '<a class="btn btn-primary navbar-right" href="./logout">Logout</a>';
             }
             else {
@@ -63,7 +62,7 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
-        <h1>Synergy Space<?php if($_SESSION) echo ": Logado como " . $_SESSION["email"] ?></h1>
+        <h1>Synergy Space<?php if($logado) echo ": Logado como " . $_SESSION["email"] ?></h1>
         <p>Here you find a place for your Job wherever you are.</p>
         <p> Sign up to have the opportunity to join or create a coworking team  or just explore the available spaces.</p>
         <p><a class="btn btn-primary btn-lg" href="./login" role="button">Log in</a>
@@ -94,6 +93,6 @@
     </div> <!-- /container -->
 
 
-    <?php include 'includes/jsFiles.php' ?>
+    <?php include 'includes/jsFiles.php'; ?>
   </body>
 </html>
