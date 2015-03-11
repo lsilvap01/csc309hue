@@ -12,8 +12,14 @@ $app->config(array(
     'templates.path' => './templates'
 ));
 
+
+
 $app->get('/', function () use ($app) {
     $app->render('home.php', array('appName' => $app->getName()));
+});
+
+$app->get('/newPlace', function () use ($app) {
+    $app->render('newPlace.php', array('appName' => $app->getName()));
 });
 
 $app->get('/login', function () use ($app) {
@@ -22,29 +28,96 @@ $app->get('/login', function () use ($app) {
 
 $app->post('/login', function () use ($app) {
 	$email = $app->request->post('email');
-	$password = $app->request->post('password');
-	$sql = "SELECT * FROM User WHERE email=:email AND password=:password";
-    try {
-        $db = getConnection();
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam("email", $email);
-        $stmt->bindParam("password", makeMD5($password));
-        $stmt->execute();
-        $user = $stmt->fetchObject();
-        $db = null;
-        if ($user) {
-        	$app->redirect("/csc309hue/");
-        }
-        else
-        	$app->render('login.php', array('appName' => $app->getName(), 'error' => 'Invalid Email and/or Password.', 'email' => $email));
-    } catch(PDOException $e) {
-    	$app->render('login.php', array('appName' => $app->getName(), 'error' => 'Something went wrong. Try again.', 'email' => $email));
-       }
-    //$app->render('login.php', array('appName' => $app->getName()));
+    $password = $app->request->post('password');
+    doLogin($email, $password, $app);
 });
 
 $app->get('/signup', function () use ($app) {
     $app->render('signup.php', array('appName' => $app->getName()));
+});
+
+$app->post('/newPlace', function () use ($app) {
+    $err = "";
+    $name = $app->request->post('name');
+    if(empty($name))
+    {
+        $err = addErrorMessage($err, "Name is required."); 
+    }
+    elseif (!preg_match("/^[a-zA-Z \d]*$/",$name)) {
+      $err = addErrorMessage($err, "Only letters, numbers and white space allowed"); 
+    }
+
+    $address = $app->request->post('address');
+    if(empty($address))
+    {
+        $err = addErrorMessage($err, "Address is required."); 
+    }
+    elseif (!preg_match("/^[a-zA-Z \d]*$/",$address)) {
+      $err = addErrorMessage($err, "Only letters, numbers and white space allowed"); 
+    }
+
+    $price = $app->request->post('price');
+    if(empty($price))
+    {
+        $err = addErrorMessage($err, "Price is required."); 
+    }
+    
+    $numberSpots = $app->request->post('numberSpots');
+    if(empty($numberSpots))
+    {
+        $err = addErrorMessage($err, "Number of available spots is required."); 
+    }
+
+    $description = $app->request->post('description');
+    
+    $leaseAgreement = $app->request->post('leaseAgreement');
+
+    $photo = $app->request->post('photo');
+    if(isset($_FILES['photo']))
+    {
+        $ext = strtolower(substr($_FILES['photo']['name'],-4)); //Pegando extensão do arquivo
+        $new_name = $name . $ext; //Definindo um novo nome para o arquivo
+        $dir = 'uploads/'; //Diretório para uploads
+     
+        move_uploaded_file($_FILES['photo']['tmp_name'], $dir.$new_name); //Fazer upload do arquivo
+    }
+
+    if(empty($err))
+    {
+        $sql = "INSERT INTO CoworkingSpace(address, availableVacancies, description, leaseAgreement, name, price) VALUES(:address, :availableVacancies, :description, :leaseAgreement, :name, :price)";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array(":address" => $address,
+                        ":availableVacancies" => $numberSpots,
+                        ":description" => $description,
+                        ":leaseAgreement" => $leaseAgreement,
+                        ":name" => $name,
+                        ":price" => $price));
+            $app->redirect("/csc309hue/");
+            
+        } catch(PDOException $e) {
+            $app->render('newPlace.php', array('appName' => $app->getName(), 
+                        'error' => 'Something went wrong. Try again.',
+                        ":address" => $address,
+                        ":availableVacancies" => $numberSpots,
+                        ":description" => $description,
+                        ":leaseAgreement" => $leaseAgreement,
+                        ":name" => $name));
+        }
+    }
+    else {
+        
+        $app->render('newPlace.php', array('appName' => $app->getName(), 
+                    'error' => $err,
+                    ":address" => $address,
+                    ":availableVacancies" => $numberSpots,
+                    ":description" => $description,
+                    ":leaseAgreement" => $leaseAgreement,
+                    ":name" => $name));
+    }
+    
+
 });
 
 $app->post('/signup', function () use ($app) {
@@ -121,7 +194,8 @@ $app->post('/signup', function () use ($app) {
                         ":password" => makeMD5($password),
                         ":gender" => $gender,
                         ":birthday" => $birthday));
-            $app->redirect("/csc309hue/");
+            doLogin($email, $password, $app);
+            //$app->redirect("/csc309hue/");
             
         } catch(PDOException $e) {
             $app->render('signup.php', array('appName' => $app->getName(), 
@@ -147,9 +221,13 @@ $app->get('/about', function () use ($app) {
     $app->render('about.php', array('appName' => $app->getName()));
 });
 
-$app->get('/hello/:name', function ($name) {
-    echo "Hello, $name";
+$app->get('/logout', function () use ($app) {
+    session_start(); 
+    session_unset(); 
+    session_destroy();
+    $app->redirect("/csc309hue/");
 });
+
 $app->run();
 
 function getConnection() {
