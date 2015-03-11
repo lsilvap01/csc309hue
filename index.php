@@ -199,6 +199,12 @@ $app->post('/signup', function () use ($app) {
                         ":password" => makeMD5($password),
                         ":gender" => $gender,
                         ":birthday" => $birthday));
+
+            $_SESSION["userName"] = $name;
+            $_SESSION["email"] = $email;
+            $_SESSION["gender"] = $gender;
+            $_SESSION["birthday"] = $birthday;
+
             $app->redirect("/csc309hue/");
             
         } catch(PDOException $e) {
@@ -225,9 +231,12 @@ $app->get('/about', function () use ($app) {
     $app->render('about.php', array('appName' => $app->getName()));
 });
 
-$app->get('/hello/:name', function ($name) {
-    echo "Hello, $name";
+$app->get('/logout', function ($name) {
+    session_unset(); 
+    session_destroy();
+    $app->redirect("/csc309hue/");
 });
+
 $app->run();
 
 function getConnection() {
