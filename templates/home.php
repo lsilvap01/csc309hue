@@ -59,7 +59,7 @@
         <p>Here you find a place for your Job wherever you are.</p>
         <p> Sign up to have the opportunity to join or create a coworking team  or just explore the available spaces.</p>
         <p><a class="btn btn-primary btn-lg" href="./login" role="button">Log in</a>
-          <a class="btn btn-primary btn-lg" href="./signup" role="button">Sign up</a></p> 
+          <a class="btn btn-primary btn-lg" href="./newPlace" role="button">Sign up</a></p> 
       </div>
     </div>
 
