@@ -44,34 +44,38 @@ $app->get('/search(/:query)', function ($query = "") use ($app) {
     if(!empty($query))
     {
         $results = searchSpacesByQuery($query);
+        $app->render('search.php', array('appName' => $app->getName(), 'restricted' => true, 'query' => $query, 'results' => $results));
     }
-    $search = $app->request->get('name');
+    else {
+        $app->render('search.php', array('appName' => $app->getName(), 'restricted' => true));
+    }
+    // $search = $app->request->get('name');
     
-    if ($search) {
-        $db = getConnection();
-        $data = "%".$search."%";
-        $sql = "SELECT * FROM user WHERE name like '".$data."'";
-        // we have to tell the PDO that we are going to send values to the query
-        $stmt = $db->prepare($sql);
-        // Now we execute the query passing an array toe execute();
-        $results = $stmt->execute(array($data));
-        // Extract the values from $result
-        $rows = $stmt->fetchAll();
-        $error = $stmt->errorInfo();
-        //echo $error[2];
+    // if ($search) {
+    //     $db = getConnection();
+    //     $data = "%".$search."%";
+    //     $sql = "SELECT * FROM user WHERE name like '".$data."'";
+    //     // we have to tell the PDO that we are going to send values to the query
+    //     $stmt = $db->prepare($sql);
+    //     // Now we execute the query passing an array toe execute();
+    //     $results = $stmt->execute(array($data));
+    //     // Extract the values from $result
+    //     $rows = $stmt->fetchAll();
+    //     $error = $stmt->errorInfo();
+    //     //echo $error[2];
     
-        // If there are no records.
-        if(empty($rows)) {
-            $app->render('search.php', array('appName' => $app->getName()));
+    //     // If there are no records.
+    //     if(empty($rows)) {
+    //         $app->render('search.php', array('appName' => $app->getName()));
 
-        }
-        else {
-            $app->render('search.php', array('appName' => $app->getName(), 'search' => $search, 'rows' => $rows));
+    //     }
+    //     else {
+    //         $app->render('search.php', array('appName' => $app->getName(), 'search' => $search, 'rows' => $rows));
             
-        }
-    } else {
-        $app->render('search.php', array('appName' => $app->getName(), "restricted" => false));
-    }
+    //     }
+    // } else {
+    //     $app->render('search.php', array('appName' => $app->getName(), "restricted" => false));
+    // }
 });
 
 
