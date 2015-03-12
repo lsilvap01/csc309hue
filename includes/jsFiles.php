@@ -9,8 +9,7 @@
 		$(document).ready(function(){
 		  $(".searchForm").submit(function(event) {
 		    event.preventDefault();
-		    $query = $(this).find('.searchField').val();
-		    window.location.replace("search" + ($query? "/" + encodeURIComponent(): ""));
+		    window.location.replace("search/" + encodeURIComponent($(this).find('.searchField').val()));
 		  });
 		});
 	</script>
