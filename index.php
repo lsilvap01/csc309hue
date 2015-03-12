@@ -46,7 +46,6 @@ $app->get('/search', function () use ($app) {
     if ($search) {
         $db = getConnection();
         $data = "%".$search."%";
-        echo $data;
         $sql = "SELECT * FROM user WHERE name like '".$data."'";
         // we have to tell the PDO that we are going to send values to the query
         $stmt = $db->prepare($sql);
