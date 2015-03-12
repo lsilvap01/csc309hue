@@ -164,6 +164,44 @@ CREATE TABLE IF NOT EXISTS `User` (
   `blocked` char(1) DEFAULT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
+
+CREATE TABLE IF NOT EXISTS `UserRating` (
+`idUserRating` int(11) NOT NULL,
+  `idUser` int(11) NOT NULL,
+  `idUserRated` int(11) NOT NULL,
+  `rating` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `UserRating`
+--
+ALTER TABLE `UserRating`
+ ADD PRIMARY KEY (`idUserRating`), ADD KEY `UserRating_fk1` (`idUser`), ADD KEY `UserRating_fk2` (`idUserRated`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `UserRating`
+--
+ALTER TABLE `UserRating`
+MODIFY `idUserRating` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `UserRating`
+--
+ALTER TABLE `UserRating`
+ADD CONSTRAINT `UserRating_fk1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`),
+ADD CONSTRAINT `UserRating_fk2` FOREIGN KEY (`idUserRated`) REFERENCES `User` (`idUser`);
+
 --
 -- Indexes for dumped tables
 --

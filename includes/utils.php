@@ -49,4 +49,71 @@
 	        $app->render('login.php', array('appName' => $app->getName(), 'error' => 'Something went wrong. Try again.', 'email' => $email));
 	    }
 	}
+
+	function getUserById($idUser)
+	{
+		$sql = "SELECT * FROM User WHERE idUser=:idUser";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idUser", $idUser);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($user) {
+                return $user;
+            }
+            return false;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function getUserRate($idUser)
+	{
+		$sql = "SELECT FLOOR(avg(rating)) as r FROM UserRating WHERE idUserRated=:idUserRated";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idUserRated", $idUser);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($user && $user['r']) {
+                return $user['r'];
+            }
+            return 0;
+        } catch(PDOException $e) {
+            return 0;
+        }
+	}
+
+	function canRateUser($idUser, $idUserRated)
+	{
+		return true;
+	}
+
+	function rateUser($idUser, $idUserRated, $rating)
+	{
+		
+        try {
+            $db = getConnection();
+
+            $sql = "DELETE FROM UserRating WHERE idUser=:idUser AND idUserRated=:idUserRated";
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array(":idUser" => $idUser,
+                        ":idUserRated" => $idUserRated));
+
+            $sql = "INSERT INTO UserRating(idUser, idUserRated, rating) VALUES(:idUser, :idUserRated, :rating)";
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array(":idUser" => $idUser,
+                        ":idUserRated" => $idUserRated,
+                        ":rating" => $rating));
+
+            return true;
+            
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
 ?>

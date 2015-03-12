@@ -7,6 +7,8 @@ require 'includes/utils.php';
 $app = new \Slim\Slim();
 $app->setName('Synergy Space');
 
+$site_url = "http://localhost/csc309hue/";
+
 $app->config(array(
     'debug' => true,
     'templates.path' => './templates'
@@ -15,7 +17,17 @@ $app->config(array(
 
 
 $app->get('/', function () use ($app) {
-    $app->render('home.php', array('appName' => $app->getName()));
+    session_start();
+    
+    if(isset($_SESSION['userID']))
+    {
+        $user = getUserById($_SESSION['userID']);
+        $app->render('userHome.php', array('appName' => $app->getName(), "user" => $user));
+    }
+    else
+    {
+        $app->render('home.php', array('appName' => $app->getName()));
+    }
 });
 
 $app->get('/newPlace', function () use ($app) {
@@ -94,7 +106,7 @@ $app->post('/newPlace', function () use ($app) {
                         ":leaseAgreement" => $leaseAgreement,
                         ":name" => $name,
                         ":price" => $price));
-            $app->redirect("/csc309hue/");
+            $app->redirect($site_url);
             
         } catch(PDOException $e) {
             $app->render('newPlace.php', array('appName' => $app->getName(), 
@@ -221,11 +233,111 @@ $app->get('/about', function () use ($app) {
     $app->render('about.php', array('appName' => $app->getName()));
 });
 
+$app->get('/user/:id', function ($id) use ($app) {
+    if(intval($id) <= 0)
+    {
+        $app->redirect($site_url);
+        //echo json_encode(array('success' => false, 'error' => 'Ivalid user id'));
+    }
+    else
+    {
+        session_start();
+    
+        if(isset($_SESSION['userID']))
+        {
+            $user = getUserById($id);
+            if($user)
+            {
+               $app->render('userHome.php', array('appName' => $app->getName(), "user" => $user)); 
+            }
+            else
+            {
+                $app->redirect($site_url);
+            }
+        }
+        else
+        {
+            $app->redirect($site_url);
+        }
+    }
+    
+});
+
+$app->post('/user/rate', function () use ($app) {
+    session_start();
+    $app->response->headers->set('Content-Type', 'application/json');
+    if(isset($_SESSION['userID']))
+    {
+        if(intval($app->request->post('idBox')) > 0 && intval($app->request->post('rate')) >= 0)
+        {
+            $aResponse['error'] = false;
+            $aResponse['message'] = '';
+
+            if($app->request->post('action') != null)
+            {
+                if(htmlentities($app->request->post('action'), ENT_QUOTES, 'UTF-8') == 'rating')
+                {
+                    $id = intval($app->request->post('idBox'));
+                    $rate = intval($app->request->post('rate'));
+                    
+                    $user = getUserById($id);
+                    if($user)
+                    {
+                        if(canRateUser($_SESSION['userID'], $id))
+                        {
+                            if(rateUser($_SESSION['userID'], $id, $rate))
+                            {
+                                $aResponse['message'] = 'Your rate has been successfuly recorded. Thanks for your rate.';
+                            }
+                            else
+                            {
+                                $aResponse['error'] = true;
+                                $aResponse['message'] = 'An error occured during the request. Please retry';
+                            }
+                        }
+                        else
+                        {
+                            $aResponse['error'] = true;
+                            $aResponse['message'] = 'You cannot rate this user';
+                        }
+                    }
+                    else
+                    {
+                        $aResponse['error'] = true;
+                        $aResponse['message'] = 'User does not exist';
+                    }
+                }
+                else
+                {
+                    $aResponse['error'] = true;
+                    $aResponse['message'] = '"action" post data not equal to \'rating\'';
+                }
+            }
+            else
+            {
+                $aResponse['error'] = true;
+                $aResponse['message'] = 'Something went wrong';
+            }
+        }
+        else
+        {
+            $aResponse['error'] = true;
+            $aResponse['message'] = 'Invalid parameters';
+        }
+    }
+    else
+    {
+        $aResponse['error'] = true;
+        $aResponse['message'] = 'You must be logged in to rate a user';
+    }
+    echo json_encode($aResponse);
+});
+
 $app->get('/logout', function () use ($app) {
     session_start(); 
     session_unset(); 
     session_destroy();
-    $app->redirect("/csc309hue/");
+    $app->redirect($site_url);
 });
 
 $app->run();
