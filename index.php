@@ -7,12 +7,9 @@ require 'includes/utils.php';
 $app = new \Slim\Slim();
 $app->setName('Synergy Space');
 
-<<<<<<< HEAD
-$site_url = "http://localhost:800/csc309hue/";
-=======
 $site_url = "http://localhost/csc309hue/";
 $upload_directory = "uploads/";
->>>>>>> origin/master
+
 
 $app->config(array(
     'debug' => true,
