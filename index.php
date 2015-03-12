@@ -36,6 +36,10 @@ $app->get('/space/new', function () use ($app) {
     $app->render('newPlace.php', array('appName' => $app->getName(), "restricted" => true));
 });
 
+$app->get('/space', function () use ($app){
+	$app->render('space.php', array('appName' => $app->getName()));
+});
+
 $app->get('/login', function () use ($app) {
     $app->render('login.php', array('appName' => $app->getName()));
 });

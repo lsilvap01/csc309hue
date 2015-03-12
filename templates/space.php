@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -49,12 +48,12 @@
     <h2 class="form-signin-heading">Space 
 	
 	<?php 
-	$idSpace = 4;
-	$sql = "SELECT name FROM coworkingspace";
+	$idSpace = 6;
+	$sql = "SELECT name FROM coworkingspace WHERE idSpace = :idSpace";
 	try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
-        $stmt->bindParam("idSpace", $idSpace);
+        $stmt->bindParam(":idSpace", $idSpace);
 		$stmt->execute();
         $space = $stmt->fetch();
         $db = null;
@@ -70,37 +69,24 @@
 
     </div>
 
-<!-- comeco do carrosel -->
-<div id="myCarousel" class="carousel slide" data-ride="carousel">
-  <!-- Indicators -->
-  <ol class="carousel-indicators">
-    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-    <li data-target="#myCarousel" data-slide-to="1"></li>
-    <li data-target="#myCarousel" data-slide-to="2"></li>
-    <li data-target="#myCarousel" data-slide-to="3"></li>
-  </ol>
-
-  <!-- Wrapper for slides -->
-  <div class="carousel-inner" role="listbox">
-    <div class="item active">
-      <img src="img_chania.jpg" alt="Chania">
-    </div>
-
-    <div class="item">
-      <img src="img_chania2.jpg" alt="Chania">
-    </div>
-
-  </div>
-
-  <!-- Left and right controls -->
-  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-  </a>
+<div> 
+	<?php 	
+	$idSpace = 6;
+	$sql = "SELECT * FROM photo WHERE idSpace = :idSpace";
+	try {
+        $db = getConnection();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(":idSpace", $idSpace);
+		$stmt->execute();
+        $space = $stmt->fetch();
+        $db = null; 
+		echo '<img src="uploads/'.$space["url"].'" alt="'.$space["url"].'"width="500">';
+	} catch(PDOException $e) {
+		echo "Ops...";
+		//echo $e;
+    }	
+	?>
+	
 </div ><!-- final do carrosel -->
 
 
