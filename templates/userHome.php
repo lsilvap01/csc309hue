@@ -73,7 +73,7 @@
               alert('Error : please retry');
             }
           });
-        <? } ?>
+        <?php } ?>
       });
     </script>
   </body>
