@@ -133,8 +133,7 @@
 	    $db = getConnection();
 	    $sql = "SELECT c.* FROM CoworkingSpace c, User u WHERE u.idUser = c.idOwner and (c.description LIKE :query OR c.name LIKE :query OR u.name LIKE :query)  ORDER BY c.name";
 	    $stmt = $db->prepare($sql);
-	    $stmt->bindParam("query", '%'.$query.'%');
-		$stmt->execute();
+		$stmt->execute(array(":query" => '%'.$query.'%'));
  		return $stmt->fetchAll();
 	}
 
