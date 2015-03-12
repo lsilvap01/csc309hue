@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Login || <?php echo $this->data['appName']; ?></title>
+    <title>Sign Up || <?php echo $this->data['appName']; ?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -49,19 +49,19 @@
         <h2 class="form-signin-heading">Sign up</h2>
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" class="form-control" id="email" value="<?php echo $this->data['email']; ?>" name="email" placeholder="Enter email">
+          <input type="email" class="form-control" id="email" maxlength="100" value="<?php echo $this->data['email']; ?>" name="email" placeholder="Enter email">
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+          <input type="password" class="form-control" id="password" maxlength="20" name="password" placeholder="Password">
         </div>
         <div class="form-group">
           <label for="confirmpassword">Confirm password</label>
-          <input type="password" class="form-control" id="confirmpassword" name="confirmpassword" placeholder="Confirm password">
+          <input type="password" class="form-control" id="confirmpassword" maxlength="20" name="confirmpassword" placeholder="Confirm password">
         </div>
         <div class="form-group">
           <label for="name">Name</label>
-          <input type="text" class="form-control" id="name" value="<?php echo $this->data['name']; ?>" name="name" placeholder="Name">
+          <input type="text" class="form-control" id="name" maxlength="50" value="<?php echo $this->data['name']; ?>" name="name" placeholder="Name">
         </div>
         <div class="form-group">
           <label for="gender">Gender</label>
@@ -210,21 +210,25 @@
           rules: {
             name: {
               required: true,
+              maxlength: 50,
               regex: "^[a-zA-Z ]*$"
             },
             password: {
               required: true,
               minlength: 5,
+              maxlength: 20,
               regex: "^[a-z0-9]+$"
             },
             confirmpassword: {
               required: true,
               minlength: 5,
+              maxlength: 20,
               regex: "^[a-z0-9]+$",
               equalTo: "#password"
             },
             email: {
               required: true,
+              maxlength: 100,
               email: true
             },
             birthday: {
@@ -235,21 +239,28 @@
           },
           messages: {
             name: {
-              required: "Please enter your firstname",
+              required: "Please enter your name",
+              maxlength: "Your name must be at most 50 characters long",
               regex: "Only letters and white space allowed"
             },
             password: {
               required: "Please provide a password",
               minlength: "Your password must be at least 5 characters long",
+              maxlength: "Your password must be at most 20 characters long",
               regex: "Only letters and numbers allowed"
             },
             confirmpassword: {
               required: "Please provide a password",
               minlength: "Your password must be at least 5 characters long",
+              maxlength: "Your password must be at most 20 characters long",
               regex: "Only letters and numbers allowed",
               equalTo: "Please enter the same password as above"
             },
-            email: "Please enter a valid email address",
+            email: {
+              required: "Please enter your email",
+              maxlength: "Your email must be at most 20 characters long",
+              email: "Please enter a valid email address",
+            },
             birthday: {
               required: "Please provide your birthday",
               date: "Please enter a valid date"

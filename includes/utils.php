@@ -126,4 +126,54 @@
             return false;
         }
 	}
+
+	//Coworking Space
+
+
+	function getLastInsertedSpaceByOwner($idOwner)
+	{
+		$sql = "SELECT idSpace FROM CoworkingSpace WHERE idOwner=:idOwner ORDER BY idSpace DESC LIMIT 1";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idOwner", $idOwner);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($user) {
+                return $user['idSpace'];
+            }
+            return 0;
+        } catch(PDOException $e) {
+            return 0;
+        }
+	}
+
+	function addPhotoToSpace($photo, $idSpace)
+	{
+		$sql = "INSERT INTO Photo(idSpace, url) VALUES(:idSpace, :url)";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array(":idSpace" => $idSpace,
+                        ":url" => $photo));
+            return true;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function addLeaseToSpace($lease, $idSpace)
+	{
+		$sql = "UPDATE CoworkingSpace SET leaseAgreement=:lease WHERE idSpace=:idSpace";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array(":idSpace" => $idSpace,
+                        ":lease" => $lease));
+            return true;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
 ?>
