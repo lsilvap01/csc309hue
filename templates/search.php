@@ -1,4 +1,4 @@
-
+<?php include 'includes/sessionConfig.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -23,6 +23,7 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
   </head>
 
   <body>
@@ -44,17 +45,57 @@
 
 
     <div class="container">
-
-      
-      <h2 class="form-signin-heading">Search</h2>
-       
-       <input type="text" name="typeahead">
-    </div>
+       <form class="form-signup" roel="form" method="GET">
+        <h2 class="form-signup-heading">Search</h2>
+        <div class="form-group">
+            
+            <input id="name" type="text" class="form-control input-md" name="name" placeholder="Search">
+        </div>
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-default btnSearch">
+              <span class="glyphicon glyphicon-search"> Search</span>
+            </button>
+        </span>
+        <div class="col-sm-8">
+                <!-- This table is where the data is display. -->
+                    <table id="resultTable" class="table table-striped table-hover">
+                        <thead>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+       </form>
 
       
     </div> <!-- /container -->
+    <?php include 'includes/jsFiles.php' ?>
+    <script type="text/javascript">
+      jQuery(document).ready(function($) {
+        $('.btnSearch').click(function(){
+          makeAjaxRequest();
+        });
 
+            $('form').submit(function(e){
+                e.preventDefault();
+                makeAjaxRequest();
+                return false;
+            });
 
-   <?php include 'includes/jsFiles.php' ?>
+            function makeAjaxRequest() {
+                $.ajax({
+                    url: 'searchConn.php',
+                    type: 'get',
+                    data: {name: $('input#search').val()},
+                    success: function(response) {
+                        $('table#resultTable tbody').html(response);
+                    }
+                });
+            }
+      });
+    </script>
+   
   </body>
 </html>

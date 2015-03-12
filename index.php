@@ -38,6 +38,60 @@ $app->get('/login', function () use ($app) {
     $app->render('login.php', array('appName' => $app->getName()));
 });
 
+$app->get('/search', function () use ($app) {
+    $search = $app->request->get('name');
+    echo " bla".$search;
+   /* if ($search) {
+        $db = getConnection();
+        echo " bla".$search;
+        $data = "%".$search."%";
+        $sql = 'SELECT * FROM user WHERE name like ?';
+        // we have to tell the PDO that we are going to send values to the query
+        $stmt = $conn->prepare($sql);
+        // Now we execute the query passing an array toe execute();
+        $results = $stmt->execute(array($data));
+        // Extract the values from $result
+        $rows = $stmt->fetchAll();
+        $error = $stmt->errorInfo();
+        //echo $error[2];
+    
+        // If there are no records.
+        if(empty($rows)) {
+            echo "<tr>";
+                echo "<td colspan='4'>There were not records</td>";
+            echo "</tr>";
+        }
+        else {
+            foreach ($rows as $row) {
+                echo "<tr>";
+                    echo "<td>".$row['idUser']."</td>";
+                    echo "<td>".$row['name']."</td>";
+                    echo "<td>".$row['email']."</td>";
+                echo "</tr>";
+            }
+        }
+    } else {*/
+        $app->render('search.php', array('appName' => $app->getName(), "restricted" => false));
+    //}
+});
+
+$app->post('/search', function () use ($app) {
+    $search = $app->request->post('typeahead');
+    $sql = "SELECT * FROM User WHERE name=:search";
+    try {
+        $db = getConnection();
+        //$stmt = $db->prepare($sql);
+        //$stmt->execute();
+        foreach($db->query($sql) as $row) {
+            echo $row['name'].' '.$row['email']; //etc...
+        }
+
+        $db = null;
+    } catch(PDOException $e) {
+        return false;
+    }
+});
+
 $app->post('/login', function () use ($app) {
 	$email = $app->request->post('email');
     $password = $app->request->post('password');
@@ -342,15 +396,7 @@ $app->get('/logout', function () use ($app) {
 
 $app->run();
 
-function getConnection() {
-    $dbhost="localhost";
-    $dbuser="root";
-    $dbpass="";
-    $dbname="csc309";
-    $dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
-    $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    return $dbh;
-}
+
 
 function addErrorMessage($errors, $message)
 {

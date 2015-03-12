@@ -5,6 +5,16 @@
 		return hash_hmac ("md5", $string, $GLOBALS['keyMD5']);
 	}
 
+    function getConnection() {
+        $dbhost="localhost";
+        $dbuser="root";
+        $dbpass="";
+        $dbname="csc309";
+        $dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
+        $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $dbh;
+    }
+
 	function emailExists($email)
 	{
 		$sql = "SELECT * FROM User WHERE email=:email";

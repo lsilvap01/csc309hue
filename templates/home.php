@@ -40,7 +40,9 @@
         <div id="navbar" class="navbar-collapse collapse">
           <?php 
             if($logado) {
-              echo '<a class="btn btn-primary navbar-right" href="./logout">Logout</a>';
+              echo '<a class="btn btn-primary navbar-right" role="button" href="./logout">Logout</a>';
+              echo '<div class="navbar-brand navbar-right navbar-header"> Hello, <a  href="./">'.$_SESSION["userName"].'</a></div>' ;
+              
             }
             else {
             ?>
@@ -62,7 +64,7 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
-        <h1>Synergy Space<?php if($logado) { echo ": Logado como " . $_SESSION["email"]; } ?></h1>
+        <h1>Synergy Space</h1>
         <p>Here you find a place for your Job wherever you are.</p>
         <p> Sign up to have the opportunity to join or create a coworking team  or just explore the available spaces.</p>
         <p><a class="btn btn-primary btn-lg" href="./login" role="button">Log in</a>
