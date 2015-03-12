@@ -192,10 +192,11 @@
 
     <?php include 'includes/jsFiles.php' ?>
     <script src="js/validation/dist/jquery.validate.js"></script>
+    <script src="js/mask.jquery.js" type="text/javascript"></script>
     <script>
 
       $().ready(function() {
-
+        $("#birthday").mask("9999-99-99",{placeholder:"yyyy-mm-dd"});
         $.validator.addMethod(
           "regex",
           function(value, element, regexp) {
