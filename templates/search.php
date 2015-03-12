@@ -83,7 +83,34 @@
        </form>
 
       
-    </div> <!-- /container -->
+    </div> 
+
+    <div class="container">
+      <!-- Example row of columns -->
+      <h1>Results</h1>
+      
+        <?php $results = $this->data['results'];
+              $count = 0; 
+              foreach ($results as $space) { 
+                $count++; ?>
+                <?php if($count%3 == 1) echo '<div class="row">'; ?>
+                <div class="col-md-4">
+                  <h2><?php echo $space['name']; ?></h2>
+                  <p><?php echo substr($space['description'], 0, 250).(strlen($space['description'])>250? '...':''); ?></p>
+                  <p><a class="btn btn-default" href="./space/<?php echo $space['idSpace']; ?>" role="button">View details &raquo;</a></p>
+                </div>
+                <?php if($count%3 == 0) echo '</div>'; ?>
+      <?php   } 
+              if($count>0 && $count%3 != 0) 
+              {
+                echo '</div>';
+              }
+              elseif($count == 0)
+              {
+                echo '<h3>No results.</h3>';
+              }
+      ?>
+    </div><!-- /container -->
     <?php include 'includes/jsFiles.php' ?>
     
    

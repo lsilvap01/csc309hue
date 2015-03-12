@@ -40,7 +40,11 @@ $app->get('/login', function () use ($app) {
     $app->render('login.php', array('appName' => $app->getName()));
 });
 
-$app->get('/search', function () use ($app) {
+$app->get('/search(/:query)', function ($query = "") use ($app) {
+    if(!empty($query))
+    {
+        $results = searchSpacesByQuery($query);
+    }
     $search = $app->request->get('name');
     
     if ($search) {

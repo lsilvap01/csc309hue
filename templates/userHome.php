@@ -34,8 +34,66 @@
 
     <div class="container">
       <!-- Example row of columns -->
-      <div class="row">
-        <div class="col-md-4">
+      <h1><?php if($_SESSION['userID'] == $this->data['user']['idUser']) { ?>My Coworking Spaces<?php } else { ?>Coworking Spaces of <?php echo explode(" ", $this->data['user']['name'])[0]; ?><?php } ?></h1>
+      
+        <?php $mySpaces = getSpacesByOwner($this->data["user"]["idUser"]);
+              $count = 0; 
+              foreach ($mySpaces as $space) { 
+                $count++; ?>
+                <?php if($count%3 == 1) echo '<div class="row">'; ?>
+                <div class="col-md-4">
+                  <h2><?php echo $space['name']; ?></h2>
+                  <p><?php echo substr($space['description'], 0, 250).(strlen($space['description'])>250? '...':''); ?></p>
+                  <p><a class="btn btn-default" href="./space/<?php echo $space['idSpace']; ?>" role="button">View details &raquo;</a></p>
+                </div>
+                <?php if($count%3 == 0) echo '</div>'; ?>
+      <?php   } 
+              if($count>0 && $count%3 != 0) 
+              {
+                echo '</div>';
+              }
+              elseif($count == 0)
+              {
+                if($_SESSION['userID'] == $this->data['user']['idUser']) {
+                  echo '<h3>You do not own any space.</h3>';
+                }
+                else
+                {
+                  echo '<h3>' . ($this->data['user']['gender'] == 'm'? 'He' : 'She') . ' does not own any space.</h3>';
+                }
+              }
+      ?>
+
+      <h1><?php if($_SESSION['userID'] == $this->data['user']['idUser']) { ?>Coworking Spaces where I work<?php } else { ?>Coworking Spaces where <?php echo explode(" ", $this->data['user']['name'])[0]; ?> works<?php } ?></h1>
+      
+        <?php $myMemberSpaces = getSpacesByMember($this->data["user"]["idUser"]);
+              $count = 0; 
+              foreach ($myMemberSpaces as $space) { 
+                $count++; ?>
+                <?php if($count%3 == 1) echo '<div class="row">'; ?>
+                <div class="col-md-4">
+                  <h2><?php echo $space['name']; ?></h2>
+                  <p><?php echo substr($space['description'], 0, 250).(strlen($space['description'])>250? '...':''); ?></p>
+                  <p><a class="btn btn-default" href="./space/<?php echo $space['idSpace']; ?>" role="button">View details &raquo;</a></p>
+                </div>
+                <?php if($count%3 == 0) echo '</div>'; ?>
+      <?php   } 
+              if($count>0 && $count%3 != 0) 
+              {
+                echo '</div>';
+              }
+              elseif($count == 0)
+              {
+                if($_SESSION['userID'] == $this->data['user']['idUser']) {
+                  echo '<h3>You are not member of any space.</h3>';
+                }
+                else
+                {
+                  echo '<h3>' . ($this->data['user']['gender'] == 'm'? 'He' : 'She') . ' is not member of any space.</h3>';
+                }
+              }
+      ?>
+        <!-- <div class="col-md-4">
           <h2>Coworking Space</h2>
           <p>Synergy Space is a coworking website for you to find the best place to work.  </p>
           <p><a class="btn btn-default" href="./about" role="button">View details &raquo;</a></p>
@@ -50,7 +108,7 @@
           <p></p>
           <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
         </div>
-      </div>
+      </div> -->
 
     </div> <!-- /container -->
 

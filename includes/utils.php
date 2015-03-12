@@ -129,6 +129,32 @@
 
 	//Coworking Space
 
+	function searchSpacesByQuery($query) {
+	    $db = getConnection();
+	    $sql = "SELECT c.* FROM CoworkingSpace c, User u WHERE u.idUser = c.idOwner and (c.description LIKE :query OR c.name LIKE :query OR u.name LIKE :query)  ORDER BY c.name";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("query", '%'.$query.'%');
+		$stmt->execute();
+ 		return $stmt->fetchAll();
+	}
+
+	function getSpacesByMember($idUser) {
+	    $db = getConnection();
+	    $sql = "SELECT c.* FROM CoworkingSpace c, Tenant t WHERE t.idUser=:idUser and c.idSpace = t.idSpace and t.approved='t' ORDER BY c.name";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("idUser", $idUser);
+		$stmt->execute();
+ 		return $stmt->fetchAll();
+	}
+
+	function getSpacesByOwner($idOwner) {
+		$db = getConnection();
+	    $sql = "SELECT * FROM CoworkingSpace WHERE idOwner=:idOwner ORDER BY name";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("idOwner", $idOwner);
+		$stmt->execute();
+ 		return $stmt->fetchAll();
+	}
 
 	function getLastInsertedSpaceByOwner($idOwner)
 	{

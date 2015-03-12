@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 03, 2015 at 12:54 AM
+-- Generation Time: Mar 12, 2015 at 10:34 PM
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -28,8 +28,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `AdminUser` (
 `idAdmin` int(11) NOT NULL,
-  `username` varchar(20) NOT NULL,
-  `password` varchar(20) NOT NULL
+  `username` varchar(150) NOT NULL,
+  `password` varchar(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -48,7 +48,15 @@ CREATE TABLE IF NOT EXISTS `CoworkingSpace` (
   `leaseAgreement` varchar(150) DEFAULT NULL,
   `reputation` float DEFAULT NULL,
   `name` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `CoworkingSpace`
+--
+
+INSERT INTO `CoworkingSpace` (`idSpace`, `idOwner`, `address`, `availableVacancies`, `price`, `description`, `leaseAgreement`, `reputation`, `name`) VALUES
+(4, 2, 'asdDas 2', 1, '50', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tincidunt, est at vestibulum ultricies, velit quam vehicula massa, egestas ornare sapien velit ac risus. Integer et ex id erat tincidunt dapibus. Curabitur ac erat et purus tristique scelerisque nec et elit. In sed maximus leo. Nam consequat risus nec euismod iaculis. In gravida nisl et lectus mollis, id porta turpis faucibus. Donec ut odio in augue vulputate hendrerit.', NULL, NULL, 'Space 1'),
+(5, 3, 'asdDas 2', 100, '50', 'asdfasdf', 'space5Lease.pdf', NULL, 'Space 2');
 
 -- --------------------------------------------------------
 
@@ -87,7 +95,14 @@ CREATE TABLE IF NOT EXISTS `Photo` (
 `idPhoto` int(11) NOT NULL,
   `idSpace` int(11) DEFAULT NULL,
   `url` varchar(200) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `Photo`
+--
+
+INSERT INTO `Photo` (`idPhoto`, `idSpace`, `url`) VALUES
+(1, 5, 'space5Photo.jpg');
 
 -- --------------------------------------------------------
 
@@ -152,7 +167,7 @@ CREATE TABLE IF NOT EXISTS `User` (
 `idUser` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(20) NOT NULL,
+  `password` varchar(40) NOT NULL,
   `gender` char(1) NOT NULL,
   `birthdate` date NOT NULL,
   `profession` varchar(50) DEFAULT NULL,
@@ -162,45 +177,41 @@ CREATE TABLE IF NOT EXISTS `User` (
   `fieldsOfInterest` text,
   `address` varchar(150) DEFAULT NULL,
   `blocked` char(1) DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `User`
+--
+
+INSERT INTO `User` (`idUser`, `name`, `email`, `password`, `gender`, `birthdate`, `profession`, `professionalExperience`, `professionalSkills`, `selfDescription`, `fieldsOfInterest`, `address`, `blocked`) VALUES
+(2, 'Lucas', 'lsilvap01@gmail.com', '175f972aaf0f5ded83a28be3f8c6523b', 'm', '1994-10-05', NULL, NULL, NULL, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tincidunt, est at vestibulum ultricies, velit quam vehicula massa, egestas ornare sapien velit ac risus. Integer et ex id erat tincidunt dapibus. Curabitur ac erat et purus tristique scelerisque nec et elit. In sed maximus leo. Nam consequat risus nec euismod iaculis. In gravida nisl et lectus mollis, id porta turpis faucibus. Donec ut odio in augue vulputate hendrerit.', NULL, NULL, NULL),
+(3, 'Teste', 'teste@teste.com', '6be3e21d2328f8a4a514c26bb773d26e', 'm', '1990-10-05', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(5, 'Teste', 'teste2@teste.com', '175f972aaf0f5ded83a28be3f8c6523b', 'm', '1990-01-01', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(6, 'asd', 'asd@ate.com', '175f972aaf0f5ded83a28be3f8c6523b', 'm', '1994-10-05', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(7, 'teste', 'asdfasd@a.com', '175f972aaf0f5ded83a28be3f8c6523b', 'm', '1993-10-05', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(8, 'vovo', 'vovo@teste.com', '175f972aaf0f5ded83a28be3f8c6523b', 'm', '1234-03-31', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(9, 'asdfasd', 'teste33@teste.com', '175f972aaf0f5ded83a28be3f8c6523b', 'm', '1994-10-05', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `UserRating`
+--
 
 CREATE TABLE IF NOT EXISTS `UserRating` (
 `idUserRating` int(11) NOT NULL,
   `idUser` int(11) NOT NULL,
   `idUserRated` int(11) NOT NULL,
-  `rating` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `rating` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 --
--- Indexes for dumped tables
+-- Dumping data for table `UserRating`
 --
 
---
--- Indexes for table `UserRating`
---
-ALTER TABLE `UserRating`
- ADD PRIMARY KEY (`idUserRating`), ADD KEY `UserRating_fk1` (`idUser`), ADD KEY `UserRating_fk2` (`idUserRated`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `UserRating`
---
-ALTER TABLE `UserRating`
-MODIFY `idUserRating` int(11) NOT NULL AUTO_INCREMENT;
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `UserRating`
---
-ALTER TABLE `UserRating`
-ADD CONSTRAINT `UserRating_fk1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`),
-ADD CONSTRAINT `UserRating_fk2` FOREIGN KEY (`idUserRated`) REFERENCES `User` (`idUser`);
+INSERT INTO `UserRating` (`idUserRating`, `idUser`, `idUserRated`, `rating`) VALUES
+(1, 3, 2, 5),
+(5, 2, 3, 6);
 
 --
 -- Indexes for dumped tables
@@ -267,6 +278,12 @@ ALTER TABLE `User`
  ADD PRIMARY KEY (`idUser`), ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `UserRating`
+--
+ALTER TABLE `UserRating`
+ ADD PRIMARY KEY (`idUserRating`), ADD KEY `UserRating_fk1` (`idUser`), ADD KEY `UserRating_fk2` (`idUserRated`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -279,7 +296,7 @@ MODIFY `idAdmin` int(11) NOT NULL AUTO_INCREMENT;
 -- AUTO_INCREMENT for table `CoworkingSpace`
 --
 ALTER TABLE `CoworkingSpace`
-MODIFY `idSpace` int(11) NOT NULL AUTO_INCREMENT;
+MODIFY `idSpace` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `CWSpacePost`
 --
@@ -294,7 +311,7 @@ MODIFY `idMessage` int(11) NOT NULL AUTO_INCREMENT;
 -- AUTO_INCREMENT for table `Photo`
 --
 ALTER TABLE `Photo`
-MODIFY `idPhoto` int(11) NOT NULL AUTO_INCREMENT;
+MODIFY `idPhoto` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `Team`
 --
@@ -319,13 +336,15 @@ MODIFY `idTenant` int(11) NOT NULL AUTO_INCREMENT;
 -- AUTO_INCREMENT for table `User`
 --
 ALTER TABLE `User`
-MODIFY `idUser` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+MODIFY `idUser` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=10;
+--
+-- AUTO_INCREMENT for table `UserRating`
+--
+ALTER TABLE `UserRating`
+MODIFY `idUserRating` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
 --
 -- Constraints for dumped tables
 --
-
-ALTER TABLE `User` MODIFY `password` varchar(40) NOT NULL;
-ALTER TABLE `AdminUser` MODIFY `password` varchar(40) NOT NULL;
 
 --
 -- Constraints for table `CoworkingSpace`
@@ -380,6 +399,13 @@ ADD CONSTRAINT `TeamPost_fk2` FOREIGN KEY (`idMember`) REFERENCES `TeamMember` (
 ALTER TABLE `Tenant`
 ADD CONSTRAINT `Tenant_fk1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`),
 ADD CONSTRAINT `Tenant_fk2` FOREIGN KEY (`idSpace`) REFERENCES `CoworkingSpace` (`idSpace`);
+
+--
+-- Constraints for table `UserRating`
+--
+ALTER TABLE `UserRating`
+ADD CONSTRAINT `UserRating_fk1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`),
+ADD CONSTRAINT `UserRating_fk2` FOREIGN KEY (`idUserRated`) REFERENCES `User` (`idUser`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
