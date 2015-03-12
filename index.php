@@ -317,12 +317,12 @@ $app->get('/user/:id', function ($id) use ($app) {
     
 });
 
-$app->post('/user/rate', function () use ($app) {
+$app->post('/user/:idBox/rate', function ($idBox) use ($app) {
     session_start();
     $app->response->headers->set('Content-Type', 'application/json');
     if(isset($_SESSION['userID']))
     {
-        if(intval($app->request->post('idBox')) > 0 && intval($app->request->post('rate')) >= 0)
+        if(intval($idBox) > 0 && intval($app->request->post('rate')) >= 0)
         {
             $aResponse['error'] = false;
             $aResponse['message'] = '';
@@ -331,7 +331,7 @@ $app->post('/user/rate', function () use ($app) {
             {
                 if(htmlentities($app->request->post('action'), ENT_QUOTES, 'UTF-8') == 'rating')
                 {
-                    $id = intval($app->request->post('idBox'));
+                    $id = intval($idBox);
                     $rate = intval($app->request->post('rate'));
                     
                     $user = getUserById($id);
