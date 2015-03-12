@@ -28,7 +28,9 @@
 	$conn = dbConnect();
 	$OK = true; // We use this to verify the status of the update.
 	// If 'buscar' is in the array $_POST proceed to make the query.
+	echo $ok."baubau"
 	if (isset($_GET['name'])) {
+
 		// Create the query
 		$data = "%".$_GET['name']."%";
 		$sql = 'SELECT * FROM user WHERE name like ?';
@@ -53,7 +55,6 @@
 				echo "<td>".$row['idUser']."</td>";
 				echo "<td>".$row['name']."</td>";
 				echo "<td>".$row['email']."</td>";
-				echo "<td>".$row['telephone']."</td>";
 			echo "</tr>";
 		}
 	}

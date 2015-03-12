@@ -92,10 +92,10 @@
               </ul>
             </li>
           </ul>
-          <form class="navbar-form navbar-right" role="search">
+          <form class="navbar-form navbar-right" role="search" action="./search">
             <div class="form-group">
               <div class="col-sm-10">
-              <input type="text" class="form-control" placeholder="Search Workspaces"></div>
+              <input type="text" class="form-control" placeholder="Search Workspaces" name="name"></div>
             </div>
             <button type="submit" class="btn btn-default">Submit</button>
           </form>
@@ -153,7 +153,7 @@
               alert('Error : please retry');
             }
           });
-        <? } ?>
+        <?php } ?>
       });
     </script>
   </body>

@@ -45,15 +45,18 @@
 
 
     <div class="container">
-       <form class="form-signup" roel="form" method="GET">
-        <h2 class="form-signup-heading">Search</h2>
+       <form class="form-signup" role="form" action="./search" method="GET">
+        
         <div class="form-group">
-            
-            <input id="name" type="text" class="form-control input-md" name="name" placeholder="Search">
+            <?php if ($this->data['search']) {
+              echo '<input id="name" type="text" class="form-control input-md" name="name" placeholder="'.$this->data['search'].'"';
+             } else { ?>
+              <input id="name" type="text" class="form-control" name="name" placeholder="Search Spaces">
+             <?php } ?>
         </div>
         <span class="input-group-btn">
             <button type="button" class="btn btn-default btnSearch">
-              <span class="glyphicon glyphicon-search"> Search</span>
+              <span class="glyphicon glyphicon-search"> </span>
             </button>
         </span>
         <div class="col-sm-8">
@@ -64,7 +67,17 @@
                             <th>Name</th>
                             <th>Email</th>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                          <?php if ($this->data['rows']) {
+                            foreach ($this->data['rows'] as $row) {
+                              echo "<tr>";
+                                echo "<td>".$row['idUser']."</td>";
+                                echo "<td>".$row['name']."</td>";
+                                echo "<td>".$row['email']."</td>";
+                              echo "</tr>";
+                            } //end of foreach
+                          } //end of if ?>
+                        </tbody>
                     </table>
                 </div>
        </form>
@@ -72,30 +85,7 @@
       
     </div> <!-- /container -->
     <?php include 'includes/jsFiles.php' ?>
-    <script type="text/javascript">
-      jQuery(document).ready(function($) {
-        $('.btnSearch').click(function(){
-          makeAjaxRequest();
-        });
-
-            $('form').submit(function(e){
-                e.preventDefault();
-                makeAjaxRequest();
-                return false;
-            });
-
-            function makeAjaxRequest() {
-                $.ajax({
-                    url: 'searchConn.php',
-                    type: 'get',
-                    data: {name: $('input#search').val()},
-                    success: function(response) {
-                        $('table#resultTable tbody').html(response);
-                    }
-                });
-            }
-      });
-    </script>
+    
    
   </body>
 </html>

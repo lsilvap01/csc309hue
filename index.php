@@ -7,7 +7,7 @@ require 'includes/utils.php';
 $app = new \Slim\Slim();
 $app->setName('Synergy Space');
 
-$site_url = "http://localhost/csc309hue/";
+$site_url = "http://localhost:800/csc309hue/";
 
 $app->config(array(
     'debug' => true,
@@ -40,14 +40,14 @@ $app->get('/login', function () use ($app) {
 
 $app->get('/search', function () use ($app) {
     $search = $app->request->get('name');
-    echo " bla".$search;
-   /* if ($search) {
+    
+    if ($search) {
         $db = getConnection();
-        echo " bla".$search;
         $data = "%".$search."%";
-        $sql = 'SELECT * FROM user WHERE name like ?';
+        echo $data;
+        $sql = "SELECT * FROM user WHERE name like '".$data."'";
         // we have to tell the PDO that we are going to send values to the query
-        $stmt = $conn->prepare($sql);
+        $stmt = $db->prepare($sql);
         // Now we execute the query passing an array toe execute();
         $results = $stmt->execute(array($data));
         // Extract the values from $result
@@ -57,40 +57,19 @@ $app->get('/search', function () use ($app) {
     
         // If there are no records.
         if(empty($rows)) {
-            echo "<tr>";
-                echo "<td colspan='4'>There were not records</td>";
-            echo "</tr>";
+            $app->render('search.php', array('appName' => $app->getName()));
+
         }
         else {
-            foreach ($rows as $row) {
-                echo "<tr>";
-                    echo "<td>".$row['idUser']."</td>";
-                    echo "<td>".$row['name']."</td>";
-                    echo "<td>".$row['email']."</td>";
-                echo "</tr>";
-            }
+            $app->render('search.php', array('appName' => $app->getName(), 'search' => $search, 'rows' => $rows));
+            
         }
-    } else {*/
+    } else {
         $app->render('search.php', array('appName' => $app->getName(), "restricted" => false));
-    //}
-});
-
-$app->post('/search', function () use ($app) {
-    $search = $app->request->post('typeahead');
-    $sql = "SELECT * FROM User WHERE name=:search";
-    try {
-        $db = getConnection();
-        //$stmt = $db->prepare($sql);
-        //$stmt->execute();
-        foreach($db->query($sql) as $row) {
-            echo $row['name'].' '.$row['email']; //etc...
-        }
-
-        $db = null;
-    } catch(PDOException $e) {
-        return false;
     }
 });
+
+
 
 $app->post('/login', function () use ($app) {
 	$email = $app->request->post('email');
