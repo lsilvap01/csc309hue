@@ -63,17 +63,22 @@
                 <!-- This table is where the data is display. -->
                     <table id="resultTable" class="table table-striped table-hover">
                         <thead>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Email</th>
+                            <th>Space Name</th>
+                            <th>Owner</th>
+                            <th>Price</th>
+                            <th>Address</th>
+                            <th>Vacancies</th>
                         </thead>
                         <tbody>
                           <?php if ($this->data['rows']) {
-                            foreach ($this->data['rows'] as $row) {
+                            $rows = $this->data['rows'];
+                            foreach ($rows as $row) {
                               echo "<tr>";
-                                echo "<td>".$row['idUser']."</td>";
+                                echo "<td>".$row['space']."</td>";
                                 echo "<td>".$row['name']."</td>";
-                                echo "<td>".$row['email']."</td>";
+                                echo "<td>".$row['price']."</td>";
+                                echo "<td>".$row['address']."</td>";
+                                echo "<td>".$row['availableVacancies']."</td>";
                               echo "</tr>";
                             } //end of foreach
                           } //end of if ?>

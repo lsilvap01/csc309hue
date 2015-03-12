@@ -7,7 +7,7 @@ require 'includes/utils.php';
 $app = new \Slim\Slim();
 $app->setName('Synergy Space');
 
-$site_url = "http://localhost/csc309hue/";
+$site_url = "http://localhost:800/csc309hue/";
 $upload_directory = "uploads/";
 
 
@@ -50,7 +50,7 @@ $app->get('/search(/:query)', function ($query = "") use ($app) {
     if ($search) {
         $db = getConnection();
         $data = "%".$search."%";
-        $sql = "SELECT * FROM user WHERE name like '".$data."'";
+        $sql = "SELECT  s.name as 'space', u.name, s.price, s.address, s.availableVacancies FROM coworkingspace s LEFT JOIN user u ON s.idOwner=u.idUser WHERE s.name LIKE '".$data."'";
         // we have to tell the PDO that we are going to send values to the query
         $stmt = $db->prepare($sql);
         // Now we execute the query passing an array toe execute();
