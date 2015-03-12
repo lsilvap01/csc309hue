@@ -7,7 +7,12 @@ require 'includes/utils.php';
 $app = new \Slim\Slim();
 $app->setName('Synergy Space');
 
+<<<<<<< HEAD
 $site_url = "http://localhost:800/csc309hue/";
+=======
+$site_url = "http://localhost/csc309hue/";
+$upload_directory = "uploads/";
+>>>>>>> origin/master
 
 $app->config(array(
     'debug' => true,
@@ -30,7 +35,7 @@ $app->get('/', function () use ($app) {
     }
 });
 
-$app->get('/newPlace', function () use ($app) {
+$app->get('/space/new', function () use ($app) {
     $app->render('newPlace.php', array('appName' => $app->getName(), "restricted" => true));
 });
 
@@ -81,88 +86,146 @@ $app->get('/signup', function () use ($app) {
     $app->render('signup.php', array('appName' => $app->getName()));
 });
 
-$app->post('/newPlace', function () use ($app) {
-    $err = "";
-    $name = $app->request->post('name');
-    if(empty($name))
+$app->post('/space/new', function () use ($app) {
+    session_start();
+    if(isset($_SESSION['userID']))
     {
-        $err = addErrorMessage($err, "Name is required."); 
-    }
-    elseif (!preg_match("/^[a-zA-Z \d]*$/",$name)) {
-      $err = addErrorMessage($err, "Only letters, numbers and white space allowed"); 
-    }
+        $err = "";
+        $name = $app->request->post('name');
+        if(empty($name))
+        {
+            $err = addErrorMessage($err, "Name is required."); 
+        }
+        elseif (!preg_match("/^[a-zA-Z0-9 \d]*$/",$name)) {
+          $err = addErrorMessage($err, "Only letters, numbers and white space allowed"); 
+        }
+        elseif (strlen($name) > 50) {
+          $err = addErrorMessage($err, "The name must be at most 50 caracters long"); 
+        }
 
-    $address = $app->request->post('address');
-    if(empty($address))
-    {
-        $err = addErrorMessage($err, "Address is required."); 
-    }
-    elseif (!preg_match("/^[a-zA-Z \d]*$/",$address)) {
-      $err = addErrorMessage($err, "Only letters, numbers and white space allowed"); 
-    }
+        $address = $app->request->post('address');
+        if(empty($address))
+        {
+            $err = addErrorMessage($err, "Address is required."); 
+        }
+        elseif (!preg_match("/^[a-zA-Z \d]*$/",$address)) {
+          $err = addErrorMessage($err, "Only letters, numbers and white space allowed"); 
+        }
+        elseif (strlen($address) > 150) {
+          $err = addErrorMessage($err, "The address must be at most 150 caracters long"); 
+        }
 
-    $price = $app->request->post('price');
-    if(empty($price))
-    {
-        $err = addErrorMessage($err, "Price is required."); 
-    }
-    
-    $numberSpots = $app->request->post('numberSpots');
-    if(empty($numberSpots))
-    {
-        $err = addErrorMessage($err, "Number of available spots is required."); 
-    }
+        $price = $app->request->post('price');
+        if(empty($price))
+        {
+            $err = addErrorMessage($err, "Price is required."); 
+        }
+        elseif(!is_numeric($price))
+        {
+            $err = addErrorMessage($err, "Price must be a number."); 
+        }
+        elseif(floatval($price) < 0)
+        {
+            $err = addErrorMessage($err, "Price must be a positive number."); 
+        }
+        
+        $numberSpots = $app->request->post('numberSpots');
+        if(empty($numberSpots))
+        {
+            $err = addErrorMessage($err, "Number of available spots is required."); 
+        }
+        elseif(!is_numeric($numberSpots))
+        {
+            $err = addErrorMessage($err, "The number of available spots must be a number."); 
+        }
+        elseif(intval($numberSpots) < 0)
+        {
+            $err = addErrorMessage($err, "The number of available spots must be a positive number."); 
+        }
 
-    $description = $app->request->post('description');
-    
-    $leaseAgreement = $app->request->post('leaseAgreement');
+        $description = $app->request->post('description');
 
-    $photo = $app->request->post('photo');
-    if(isset($_FILES['photo']))
-    {
-        $ext = strtolower(substr($_FILES['photo']['name'],-4)); //Pegando extensão do arquivo
-        $new_name = $name . $ext; //Definindo um novo nome para o arquivo
-        $dir = 'uploads/'; //Diretório para uploads
-     
-        move_uploaded_file($_FILES['photo']['tmp_name'], $dir.$new_name); //Fazer upload do arquivo
-    }
+        if(!empty($_FILES['photo']['name']))
+        {
+            //$ext = strtolower(substr($_FILES['photo']['name'],-4)); 
+            $allowed =  array('jpeg','png' ,'jpg');
+            $ext = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION); //Pegando extensão do arquivo
+            if(!in_array($ext,$allowed) ) {
+                $err = addErrorMessage($err, "Invalid photo format (Allowed extensions: .jpg|.jpeg|.png)"); 
+            }
+        }
 
-    if(empty($err))
-    {
-        $sql = "INSERT INTO CoworkingSpace(address, availableVacancies, description, leaseAgreement, name, price) VALUES(:address, :availableVacancies, :description, :leaseAgreement, :name, :price)";
-        try {
-            $db = getConnection();
-            $stmt = $db->prepare($sql);
-            $stmt->execute(array(":address" => $address,
-                        ":availableVacancies" => $numberSpots,
-                        ":description" => $description,
-                        ":leaseAgreement" => $leaseAgreement,
-                        ":name" => $name,
-                        ":price" => $price));
-            $app->redirect($GLOBALS['site_url']);
+        if(!empty($_FILES['lease']['name']))
+        {
+            //$ext = strtolower(substr($_FILES['photo']['name'],-4)); 
+            $allowed =  array('pdf','doc' ,'docx');
+            $ext = pathinfo($_FILES['lease']['name'], PATHINFO_EXTENSION); //Pegando extensão do arquivo
+            if(!in_array($ext,$allowed) ) {
+                $err = addErrorMessage($err, "Invalid lease format (Allowed extensions: .pdf|.doc|.docx)"); 
+            }
+        }
+
+        if(empty($err))
+        {
+            $sql = "INSERT INTO CoworkingSpace(idOwner, address, availableVacancies, description, name, price) VALUES(:idOwner, :address, :availableVacancies, :description,  :name, :price)";
+            try {
+                $db = getConnection();
+                $stmt = $db->prepare($sql);
+                $stmt->execute(array(":idOwner" => $_SESSION['userID'],
+                            ":address" => $address,
+                            ":availableVacancies" => $numberSpots,
+                            ":description" => $description,
+                            ":name" => $name,
+                            ":price" => $price));
+                
+
+                $idSpace = getLastInsertedSpaceByOwner($_SESSION['userID']);
+                if($idSpace > 0)
+                {
+                    if(!empty($_FILES['photo']['name']))
+                    {
+                        $ext = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION); //Pegando extensão do arquivo
+                        $new_name = "space" . $idSpace. "Photo." . $ext; //Definindo um novo nome para o arquivo
+                        move_uploaded_file($_FILES['photo']['tmp_name'], $GLOBALS['upload_directory'].$new_name); //Fazer upload do arquivo
+                        addPhotoToSpace($new_name, $idSpace);
+                    }
+
+                    if(!empty($_FILES['lease']['name']))
+                    {
+                        $ext = pathinfo($_FILES['lease']['name'], PATHINFO_EXTENSION); //Pegando extensão do arquivo
+                        $new_name = "space" . $idSpace . "Lease." . $ext; //Definindo um novo nome para o arquivo
+                        move_uploaded_file($_FILES['lease']['tmp_name'], $GLOBALS['upload_directory'].$new_name); //Fazer upload do arquivo
+                        addLeaseToSpace($new_name, $idSpace);
+                    }
+                }
+
+                $app->redirect($GLOBALS['site_url']);
+                
+            } catch(PDOException $e) {
+                $app->render('newPlace.php', array('appName' => $app->getName(), 
+                            'error' => 'Something went wrong. Try again.',
+                            "address" => $address,
+                            "numberSpots" => $numberSpots,
+                            "description" => $description,
+                            "name" => $name,
+                            "price" => $price));
+            }
+        }
+        else {
             
-        } catch(PDOException $e) {
             $app->render('newPlace.php', array('appName' => $app->getName(), 
-                        'error' => 'Something went wrong. Try again.',
-                        ":address" => $address,
-                        ":availableVacancies" => $numberSpots,
-                        ":description" => $description,
-                        ":leaseAgreement" => $leaseAgreement,
-                        ":name" => $name));
+                        'error' => $err,
+                        "address" => $address,
+                        "numberSpots" => $numberSpots,
+                        "description" => $description,
+                        "name" => $name,
+                        "price" => $price));
         }
     }
-    else {
-        
-        $app->render('newPlace.php', array('appName' => $app->getName(), 
-                    'error' => $err,
-                    ":address" => $address,
-                    ":availableVacancies" => $numberSpots,
-                    ":description" => $description,
-                    ":leaseAgreement" => $leaseAgreement,
-                    ":name" => $name));
+    else
+    {
+        $app->redirect($GLOBALS['site_url']);
     }
-    
-
 });
 
 $app->post('/signup', function () use ($app) {
@@ -178,6 +241,9 @@ $app->post('/signup', function () use ($app) {
     elseif (emailExists($email)) {
         $err = addErrorMessage($err, "This email is already being used."); 
     }
+    elseif (strlen($email) > 100) {
+      $err = addErrorMessage($err, "The email must be at most 100 caracters long"); 
+    }
 
     $password = $app->request->post('password');
     if(empty($password))
@@ -186,6 +252,9 @@ $app->post('/signup', function () use ($app) {
     }
     elseif (!preg_match("/^[a-zA-Z\d]+$/",$password)) {
       $err = addErrorMessage("", "Only letters and numbers allowed.");
+    }
+    elseif (strlen($password) < 5 || strlen($password) > 20) {
+      $err = addErrorMessage($err, "The password must be at least 5 and at most 20 caracters long"); 
     }
 
     $confirmpassword = $app->request->post('confirmpassword');
@@ -200,6 +269,9 @@ $app->post('/signup', function () use ($app) {
     }
     elseif (!preg_match("/^[a-zA-Z ]*$/",$name)) {
       $err = addErrorMessage($err, "Only letters and white space allowed"); 
+    }
+    elseif (strlen($name) > 50) {
+      $err = addErrorMessage($err, "The name must be at most 50 caracters long"); 
     }
 
     $birthday = $app->request->post('birthday');
@@ -296,12 +368,12 @@ $app->get('/user/:id', function ($id) use ($app) {
     
 });
 
-$app->post('/user/rate', function () use ($app) {
+$app->post('/user/:idUser/rate', function ($idUser) use ($app) {
     session_start();
     $app->response->headers->set('Content-Type', 'application/json');
     if(isset($_SESSION['userID']))
     {
-        if(intval($app->request->post('idBox')) > 0 && intval($app->request->post('rate')) >= 0)
+        if(intval($idUser) > 0 && intval($app->request->post('rate')) >= 0)
         {
             $aResponse['error'] = false;
             $aResponse['message'] = '';
@@ -310,7 +382,7 @@ $app->post('/user/rate', function () use ($app) {
             {
                 if(htmlentities($app->request->post('action'), ENT_QUOTES, 'UTF-8') == 'rating')
                 {
-                    $id = intval($app->request->post('idBox'));
+                    $id = intval($idUser);
                     $rate = intval($app->request->post('rate'));
                     
                     $user = getUserById($id);
@@ -385,7 +457,7 @@ function addErrorMessage($errors, $message)
     }
     else
     {
-        return $message . "<br/>" . $message;
+        return $errors . "<br/>" . $message;
     }
 }
 ?>

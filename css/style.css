@@ -1,1 +1,6 @@
 .alert-danger {margin-top: 15px;}
+.form-validation label.error {
+    width: auto;
+    display: block;
+    color: red;
+}

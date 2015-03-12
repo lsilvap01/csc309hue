@@ -9,12 +9,20 @@
 **************************************************************************
 *************************************************************************/
 (function($) {
+	String.prototype.format = function() {
+	  var str = this;
+	  for (var i = 0; i < arguments.length; i++) {       
+	    var reg = new RegExp("\\{" + i + "\\}", "gm");             
+	    str = str.replace(reg, arguments[i]);
+	  }
+	  return str;
+	}
 	$.fn.jRating = function(op) {
 		var defaults = {
 			/** String vars **/
 			bigStarsPath : 'js/icons/stars.png', // path of the icon stars.png
 			smallStarsPath : 'js/icons/small.png', // path of the icon small.png
-			phpPath : '/csc309hue/user/rate', // path of the php file jRating.php
+			phpPath : '/csc309hue/user/{0}/rate', // path of the php file jRating.php
 			type : 'big', // can be set to 'small' or 'big'
 
 			/** Boolean vars **/
@@ -161,8 +169,7 @@
 					if(opts.onClick) opts.onClick( element, rate );
 
 					if(opts.sendRequest) {
-						$.post(opts.phpPath,{
-								idBox : idBox,
+						$.post(opts.phpPath.format(idBox),{
 								rate : rate,
 								action : 'rating'
 							},

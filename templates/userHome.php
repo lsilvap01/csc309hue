@@ -2,12 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <base href="<?php echo $GLOBALS['site_url']; ?>">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <?php include 'includes/headers.php'; ?>
 
     <title>Home || <?php echo $this->data['appName']; ?></title>
 
@@ -26,6 +21,7 @@
   </head>
 
   <body>
+<<<<<<< HEAD
 
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
@@ -102,6 +98,9 @@
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
+=======
+    <?php include 'includes/userMenu.php'; ?>
+>>>>>>> origin/master
 
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
