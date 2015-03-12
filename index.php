@@ -160,7 +160,7 @@ $app->post('/newPlace', function () use ($app) {
                         ":leaseAgreement" => $leaseAgreement,
                         ":name" => $name,
                         ":price" => $price));
-            $app->redirect($site_url);
+            $app->redirect($GLOBALS['site_url']);
             
         } catch(PDOException $e) {
             $app->render('newPlace.php', array('appName' => $app->getName(), 
@@ -290,7 +290,7 @@ $app->get('/about', function () use ($app) {
 $app->get('/user/:id', function ($id) use ($app) {
     if(intval($id) <= 0)
     {
-        $app->redirect($site_url);
+        $app->redirect($GLOBALS['site_url']);
         //echo json_encode(array('success' => false, 'error' => 'Ivalid user id'));
     }
     else
@@ -306,12 +306,12 @@ $app->get('/user/:id', function ($id) use ($app) {
             }
             else
             {
-                $app->redirect($site_url);
+                $app->redirect($GLOBALS['site_url']);
             }
         }
         else
         {
-            $app->redirect($site_url);
+            $app->redirect($GLOBALS['site_url']);
         }
     }
     
@@ -391,7 +391,7 @@ $app->get('/logout', function () use ($app) {
     session_start(); 
     session_unset(); 
     session_destroy();
-    $app->redirect($site_url);
+    $app->redirect($GLOBALS['site_url']);
 });
 
 $app->run();
