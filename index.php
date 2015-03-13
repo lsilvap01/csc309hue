@@ -69,7 +69,7 @@ $app->get('/signup', function () use ($app) {
     $app->render('signup.php', array('appName' => $app->getName()));
 });
 
-$app->post('/space/add', function () use ($app) {
+$app->post('/space/new', function () use ($app) {
     session_start();
     if(isset($_SESSION['userID']))
     {
@@ -391,6 +391,8 @@ $app->post('/userProfile', function () use ($app) {
     $professionalSkills = $app->request->post('professionalSkills');
 
     $fieldsOfInterest = $app->request->post('fieldsOfInterest');
+
+    $err = "";
 
     if(empty($err))
     {
