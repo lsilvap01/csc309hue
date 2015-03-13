@@ -203,7 +203,7 @@
         <!-- Textarea -->
         <div class="form-group">
           <label class="col-md-4 control-label" for="professinalSkills">Professional Skills</label>                   
-            <textarea class="form-control" id="professinalSkills" name="professinalSkills"><?php 
+            <textarea class="form-control" id="professionalSkills" name="professionalSkills"><?php 
                 $idUser = $_SESSION["userID"];
                 $sql = "SELECT professionalSkills FROM User WHERE idUser = :idUser";
                 try {
@@ -224,8 +224,8 @@
 
         <!-- Textarea -->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="fieldInterest">Fields of interest</label>
-            <textarea class="form-control" id="fieldInterest" name="fieldInterest"><?php 
+          <label class="col-md-4 control-label" for="fieldsOfInterest">Fields of interest</label>
+            <textarea class="form-control" id="fieldsOfInterest" name="fieldsOfInterest"><?php 
                 $idUser = $_SESSION["userID"];
                 $sql = "SELECT fieldsOfInterest FROM User WHERE idUser = :idUser";
                 try {

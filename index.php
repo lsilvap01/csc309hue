@@ -348,9 +348,9 @@ $app->post('/userProfile', function () use ($app) {
       $err = addErrorMessage($err, "The name must be at most 50 caracters long"); 
     }
 
-    $birthday = $app->request->post('birthday');
-    if (DateTime::createFromFormat('Y-m-d', $birthday) !== FALSE) {
-        $birthdayD = DateTime::createFromFormat("Y-m-d", $birthday);//strtotime($birthday);
+    $birthdate = $app->request->post('birthday');
+    if (DateTime::createFromFormat('Y-m-d', $birthdate) !== FALSE) {
+        $birthdayD = DateTime::createFromFormat("Y-m-d", $birthdate);//strtotime($birthday);
         //$birthday = date('Y/m/d',$time);
         $year = $birthdayD->format("Y");
         $month = $birthdayD->format("m");
@@ -359,7 +359,7 @@ $app->post('/userProfile', function () use ($app) {
         {
             $err = addErrorMessage($err, "Invalid birthday."); 
         }
-        elseif(strtotime($birthday) > strtotime(date('Y/m/d')))
+        elseif(strtotime($birthdate) > strtotime(date('Y/m/d')))
         {
             $err = addErrorMessage($err, "Birthday cannot be higher than the current date.");
         }
@@ -396,23 +396,25 @@ $app->post('/userProfile', function () use ($app) {
 
     if(empty($err))
     {
+        session_start();
         $userId = $_SESSION["userID"];
         $sql = "UPDATE User SET name=:name, email=:email, gender=:gender, birthdate=:birthdate, profession=:profession, address=:address, selfDescription=:selfDescription, professionalExperience=:professionalExperience, professionalSkills=:professionalSkills, fieldsOfInterest=:fieldsOfInterest WHERE idUser=:userId";
         try {
             $db = getConnection();
             $stmt = $db->prepare($sql);
+            $stmt->bindParam(":userId", $userId);
             $stmt->execute(array(":name" => $name,
                         ":email" => $email,
-                        ":password" => makeMD5($password),
                         ":gender" => $gender,
-                        ":birthday" => $birthday,
+                        ":birthdate" => $birthdate,
+                        ":profession" => $profession,
                         ":address" => $address,
                         "selfDescription" => $selfDescription,
                         ":professionalExperience" => $professionalExperience,
                         ":professionalSkills" => $professionalSkills,
                         ":fieldsOfInterest" => $fieldsOfInterest,
                         ":userId" => $userId));
-            $app->redirect("/userHome/");
+            $app->redirect($GLOBALS['site_url']);            
             
         } catch(PDOException $e) {
             $app->render('userProfile.php', array('appName' => $app->getName(), 
@@ -420,12 +422,14 @@ $app->post('/userProfile', function () use ($app) {
                         "name" => $name,
                         "email" => $email,
                         "gender" => $gender,
-                        "birthday" => $birthday,
+                        "birthdate" => $birthdate,
+                        ":profession" => $profession,
                         ":address" => $address,
                         "selfDescription" => $selfDescription,
                         ":professionalExperience" => $professionalExperience,
                         ":professionalSkills" => $professionalSkills,
-                        ":fieldsOfInterest" => $field));
+                        ":fieldsOfInterest" => $fieldsOfInterest));
+
         }
     }
     else {
@@ -434,7 +438,8 @@ $app->post('/userProfile', function () use ($app) {
                     "name" => $name,
                     "email" => $email,
                     "gender" => $gender,
-                    "birthday" => $birthday,
+                    "birthdate" => $birthdate,
+                   ":profession" => $profession,
                     ":address" => $address,
                     "selfDescription" => $selfDescription,
                     ":professionalExperience" => $professionalExperience,
