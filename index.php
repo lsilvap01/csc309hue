@@ -44,7 +44,11 @@ $app->get('/login', function () use ($app) {
     $app->render('login.php', array('appName' => $app->getName()));
 });
 
-$app->get('/search(/(:query))', function ($query = "") use ($app) {
+$app->get('/userProfile', function () use ($app) {
+    $app->render('userProfile.php', array('appName' => $app->getName()));
+});
+
+$app->get('/search(/:query)', function ($query = "") use ($app) {
     if(!empty($query))
     {
         $results = searchSpacesByQuery($query);
@@ -314,6 +318,133 @@ $app->post('/signup', function () use ($app) {
     }
     //$app->render('login.php', array('appName' => $app->getName()));
 });
+
+
+
+$app->post('/userProfile', function () use ($app) {
+    $email = $app->request->post('email');
+    $err = "";
+    if(empty($email))
+    {
+        $err = addErrorMessage($err, "Email is required."); 
+    }
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      $err = addErrorMessage($err, "Email is required.");
+    }
+    elseif (emailExists($email)) {
+        $err = addErrorMessage($err, "This email is already being used."); 
+    }
+    elseif (strlen($email) > 100) {
+      $err = addErrorMessage($err, "The email must be at most 100 caracters long"); 
+    }
+
+    $name = $app->request->post('name');
+    if(empty($name))
+    {
+        $err = addErrorMessage($err, "Name is required."); 
+    }
+    elseif (!preg_match("/^[a-zA-Z ]*$/",$name)) {
+      $err = addErrorMessage($err, "Only letters and white space allowed"); 
+    }
+    elseif (strlen($name) > 50) {
+      $err = addErrorMessage($err, "The name must be at most 50 caracters long"); 
+    }
+
+    $birthday = $app->request->post('birthday');
+    if (DateTime::createFromFormat('Y-m-d', $birthday) !== FALSE) {
+        $birthdayD = DateTime::createFromFormat("Y-m-d", $birthday);//strtotime($birthday);
+        //$birthday = date('Y/m/d',$time);
+        $year = $birthdayD->format("Y");
+        $month = $birthdayD->format("m");
+        $day = $birthdayD->format("d");
+        if(!checkdate($month, $day , $year))
+        {
+            $err = addErrorMessage($err, "Invalid birthday."); 
+        }
+        elseif(strtotime($birthday) > strtotime(date('Y/m/d')))
+        {
+            $err = addErrorMessage($err, "Birthday cannot be higher than the current date.");
+        }
+    }
+    else {
+        $err = addErrorMessage($err, "Invalid birthday."); 
+    }
+
+    $gender = $app->request->post('gender');
+    if(empty($gender))
+    {
+        $err = addErrorMessage($err, "Gender is required."); 
+    }
+
+    $profession = $app->request->post('profession');
+        if (!preg_match("/^[a-zA-Z ]*$/",$name)) {
+          $err = addErrorMessage($err, "Only letters and white space allowed"); 
+        }
+        elseif (strlen($name) > 50) {
+          $err = addErrorMessage($err, "The profession must be at most 50 caracters long"); 
+    }
+
+    $address = $app->request->post('address');
+
+    $selfDescription = $app->request->post('selfDescription');
+
+    $professionalExperience = $app->request->post('professionalExperience');
+
+    $professionalSkills = $app->request->post('professionalSkills');
+
+    $fieldsOfInterest = $app->request->post('fieldsOfInterest');
+
+    if(empty($err))
+    {
+        $userId = $_SESSION["userID"];
+        $sql = "UPDATE User SET name=:name, email=:email, gender=:gender, birthdate=:birthdate, profession=:profession, address=:address, selfDescription=:selfDescription, professionalExperience=:professionalExperience, professionalSkills=:professionalSkills, fieldsOfInterest=:fieldsOfInterest WHERE idUser=:userId";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array(":name" => $name,
+                        ":email" => $email,
+                        ":password" => makeMD5($password),
+                        ":gender" => $gender,
+                        ":birthday" => $birthday,
+                        ":address" => $address,
+                        "selfDescription" => $selfDescription,
+                        ":professionalExperience" => $professionalExperience,
+                        ":professionalSkills" => $professionalSkills,
+                        ":fieldsOfInterest" => $fieldsOfInterest,
+                        ":userId" => $userId));
+            $app->redirect("/userHome/");
+            
+        } catch(PDOException $e) {
+            $app->render('userProfile.php', array('appName' => $app->getName(), 
+                        'error' => 'Something went wrong. Try again.',
+                        "name" => $name,
+                        "email" => $email,
+                        "gender" => $gender,
+                        "birthday" => $birthday,
+                        ":address" => $address,
+                        "selfDescription" => $selfDescription,
+                        ":professionalExperience" => $professionalExperience,
+                        ":professionalSkills" => $professionalSkills,
+                        ":fieldsOfInterest" => $field));
+        }
+    }
+    else {
+        $app->render('userProfile.php', array('appName' => $app->getName(), 
+                    'error' => $err,
+                    "name" => $name,
+                    "email" => $email,
+                    "gender" => $gender,
+                    "birthday" => $birthday,
+                    ":address" => $address,
+                    "selfDescription" => $selfDescription,
+                    ":professionalExperience" => $professionalExperience,
+                    ":professionalSkills" => $professionalSkills,
+                    ":fieldsOfInterest" => $fieldsOfInterest));
+    }
+    //$app->render('login.php', array('appName' => $app->getName()));
+});
+
+
 
 $app->get('/about', function () use ($app) {
     $app->render('about.php', array('appName' => $app->getName()));

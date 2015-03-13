@@ -98,7 +98,7 @@
           <div class="form-group">
             <label class="col-md-4 control-label" for="send"></label>
             <div class="col-md-8">
-              <button id="send" name="send" class="btn btn-success" type="submit">Send</button>
+              <button id="send" name="send" class="btn btn-success" type="submit">Submit</button>
               <button id="cancel" name="cancel" class="btn btn-danger">Cancel</button>
             </div>
           </div>

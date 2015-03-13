@@ -32,25 +32,54 @@
       </div> 
     </div>
 
+    
+
+    <!--?php echo $this->data['email']; ?-->
+
     <div class="container">
-      <form class="form-signup" action="./signup" method="POST">
-        <h2 class="form-signin-heading">Sign up</h2>
+      <form class="form-userProfile" action="./userProfile" method="POST">
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" class="form-control" id="email" maxlength="100" value="<?php echo $this->data['email']; ?>" name="email" placeholder="Enter email">
+          <input type="email" class="form-control" id="email" maxlength="100" value="<?php 
+                $idUser = $_SESSION["userID"];
+                $sql = "SELECT email FROM User WHERE idUser = :idUser";
+                try {
+                      $db = getConnection();
+                      $stmt = $db->prepare($sql);
+                      $stmt->bindParam("idUser", $idUser);
+                      $stmt->execute();
+                      $email = $stmt->fetch();
+                      $db = null;
+                  echo $email["email"]; 
+                } catch(PDOException $e) {
+                  echo "";
+                  //echo $e;
+                  } 
+          ?>" name="email" placeholder="Enter email">
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" class="form-control" id="password" maxlength="20" name="password" placeholder="Password">
-        </div>
-        <div class="form-group">
-          <label for="confirmpassword">Confirm password</label>
-          <input type="password" class="form-control" id="confirmpassword" maxlength="20" name="confirmpassword" placeholder="Confirm password">
-        </div>
+
+
         <div class="form-group">
           <label for="name">Name</label>
-          <input type="text" class="form-control" id="name" maxlength="50" value="<?php echo $this->data['name']; ?>" name="name" placeholder="Name">
+          <input type="text" class="form-control" id="name" maxlength="50" value="<?php 
+                $idUser = $_SESSION["userID"];
+                $sql = "SELECT name FROM User WHERE idUser = :idUser";
+                try {
+                      $db = getConnection();
+                      $stmt = $db->prepare($sql);
+                      $stmt->bindParam("idUser", $idUser);
+                      $stmt->execute();
+                      $name = $stmt->fetch();
+                      $db = null;
+                  echo $name["name"]; 
+                } catch(PDOException $e) {
+                  echo "";
+                  //echo $e;
+                  } 
+          ?>" name="name" placeholder="Name">
         </div>
+
+
         <div class="form-group">
           <label for="gender">Gender</label>
           <select id="gender" name="gender" class="form-control">
@@ -59,16 +88,47 @@
             <option value="m" <?php if($this->data['gender'] == "m") echo "selected" ?>>Male</option>
           </select>
         </div>
+
+
         <div class="form-group">
           <label for="birthday">Birthday</label>
-          <input type="date" class="form-control" id="birthday" value="<?php echo $this->data['birthday']; ?>" name="birthday" placeholder="MM/DD/YYY">
+          <input type="date" class="form-control" id="birthday" value="<?php 
+                $idUser = $_SESSION["userID"];
+                $sql = "SELECT birthdate FROM User WHERE idUser = :idUser";
+                try {
+                      $db = getConnection();
+                      $stmt = $db->prepare($sql);
+                      $stmt->bindParam("idUser", $idUser);
+                      $stmt->execute();
+                      $birthdate = $stmt->fetch();
+                      $db = null;
+                  echo $birthdate["birthdate"]; 
+                } catch(PDOException $e) {
+                  echo "";
+                  //echo $e;
+                  } 
+          ?>" name="birthday" placeholder="MM/DD/YYY">
         </div>
 
         <!-- Text input-->
         <div class="form-group">
           <label class="col-md-4 control-label" for="profession">Profession</label>  
-          <div class="col-md-6">
-          <input id="profession" name="profession" type="text" placeholder="" class="form-control input-md">
+          <input id="profession" name="profession" type="text" maxlength="50" placeholder="" class="form-control" value="<?php 
+                $idUser = $_SESSION["userID"];
+                $sql = "SELECT profession FROM User WHERE idUser = :idUser";
+                try {
+                      $db = getConnection();
+                      $stmt = $db->prepare($sql);
+                      $stmt->bindParam("idUser", $idUser);
+                      $stmt->execute();
+                      $profession = $stmt->fetch();
+                      $db = null;
+                  echo $profession["profession"]; 
+                } catch(PDOException $e) {
+                  echo "";
+                  //echo $e;
+                  } 
+          ?>">
             
           </div>
         </div>
@@ -76,8 +136,22 @@
         <!-- Text input-->
         <div class="form-group">
           <label class="col-md-4 control-label" for="address">Address</label>  
-          <div class="col-md-6">
-          <input id="address" name="address" type="text" placeholder="" class="form-control input-md">
+          <input id="address" name="address" type="text" maxlength="50" placeholder="" class="form-control" value="<?php 
+                $idUser = $_SESSION["userID"];
+                $sql = "SELECT address FROM User WHERE idUser = :idUser";
+                try {
+                      $db = getConnection();
+                      $stmt = $db->prepare($sql);
+                      $stmt->bindParam("idUser", $idUser);
+                      $stmt->execute();
+                      $address = $stmt->fetch();
+                      $db = null;
+                  echo $address["address"]; 
+                } catch(PDOException $e) {
+                  echo "";
+                  //echo $e;
+                  } 
+          ?>">
             
           </div>
         </div>
@@ -85,43 +159,98 @@
         <!-- Textarea -->
         <div class="form-group">
           <label class="col-md-4 control-label" for="selfDescription">Self Description</label>
-          <div class="col-md-4">                     
-            <textarea class="form-control" id="selfDescription" name="selfDescription"></textarea>
+            <textarea class="form-control" id="selfDescription" name="selfDescription"><?php 
+                $idUser = $_SESSION["userID"];
+                $sql = "SELECT selfDescription FROM User WHERE idUser = :idUser";
+                try {
+                      $db = getConnection();
+                      $stmt = $db->prepare($sql);
+                      $stmt->bindParam("idUser", $idUser);
+                      $stmt->execute();
+                      $selfDescription = $stmt->fetch();
+                      $db = null;
+                  echo $selfDescription["selfDescription"]; 
+                } catch(PDOException $e) {
+                  echo "";
+                  //echo $e;
+                  } 
+          ?></textarea>
           </div>
         </div>
 
         <!-- Textarea -->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="professionalExperience">Professional Experience</label>
-          <div class="col-md-4">                     
-            <textarea class="form-control" id="professionalExperience" name="professionalExperience"></textarea>
+          <label class="col-md-4 control-label" for="professionalExperience">Professional Experience</label>           
+            <textarea class="form-control" id="professionalExperience" name="professionalExperience"><?php 
+                $idUser = $_SESSION["userID"];
+                $sql = "SELECT professionalExperience FROM User WHERE idUser = :idUser";
+                try {
+                      $db = getConnection();
+                      $stmt = $db->prepare($sql);
+                      $stmt->bindParam("idUser", $idUser);
+                      $stmt->execute();
+                      $professionalExperience = $stmt->fetch();
+                      $db = null;
+                  echo $professionalExperience["professionalExperience"]; 
+                } catch(PDOException $e) {
+                  echo "";
+                  //echo $e;
+                  } 
+          ?></textarea>
           </div>
         </div>
 
         <!-- Textarea -->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="professinalSkills">Professional Skills</label>
-          <div class="col-md-4">                     
-            <textarea class="form-control" id="professinalSkills" name="professinalSkills"></textarea>
+          <label class="col-md-4 control-label" for="professinalSkills">Professional Skills</label>                   
+            <textarea class="form-control" id="professinalSkills" name="professinalSkills"><?php 
+                $idUser = $_SESSION["userID"];
+                $sql = "SELECT professionalSkills FROM User WHERE idUser = :idUser";
+                try {
+                      $db = getConnection();
+                      $stmt = $db->prepare($sql);
+                      $stmt->bindParam("idUser", $idUser);
+                      $stmt->execute();
+                      $professionalSkills = $stmt->fetch();
+                      $db = null;
+                  echo $professionalSkills["professionalSkills"]; 
+                } catch(PDOException $e) {
+                  echo "";
+                  //echo $e;
+                  } 
+          ?></textarea>
           </div>
         </div>
 
         <!-- Textarea -->
         <div class="form-group">
           <label class="col-md-4 control-label" for="fieldInterest">Fields of interest</label>
-          <div class="col-md-4">                     
-            <textarea class="form-control" id="fieldInterest" name="fieldInterest"></textarea>
+            <textarea class="form-control" id="fieldInterest" name="fieldInterest"><?php 
+                $idUser = $_SESSION["userID"];
+                $sql = "SELECT fieldsOfInterest FROM User WHERE idUser = :idUser";
+                try {
+                      $db = getConnection();
+                      $stmt = $db->prepare($sql);
+                      $stmt->bindParam("idUser", $idUser);
+                      $stmt->execute();
+                      $fieldsOfInterest = $stmt->fetch();
+                      $db = null;
+                  echo $fieldsOfInterest["fieldsOfInterest"]; 
+                } catch(PDOException $e) {
+                  echo "";
+                  //echo $e;
+                  } 
+          ?></textarea>
           </div>
         </div>
         
         <div class="control-group">
           <label class="control-label" for="button1"></label>
           <div class="controls">
-            <button id="button1" name="button1" class="btn btn-success">Submit</button>
+            <button id="button1" name="button1" class="btn btn-success" type="submit">Submit</button>
             <button id="button2" name="button2" class="btn btn-danger">Cancel</button>
           </div>
         </div>
-        <?php if ($this->data['error']) { ?> <div id="login-alert" class="alert alert-danger col-sm-12"><?php echo $this->data['error']; ?></div> <?php } ?>
       </form>
 
 
