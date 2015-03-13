@@ -312,6 +312,26 @@
         }
 	}
 
+	function isTenantOfSpace($idTenant, $idSpace)
+	{
+		$sql = "SELECT * FROM Tenant WHERE idTenant=:idTenant AND idSpace=:idSpace AND approved='y' LIMIT 1";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idTenant", $idTenant);
+            $stmt->bindParam("idSpace", $idSpace);
+            $stmt->execute();
+            $tenant = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($tenant) {
+                return true;
+            }
+            return false;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
 	function userHasSentRequestToSpace($idUser, $idSpace)
 	{
 		$sql = "SELECT * FROM Tenant WHERE idUser=:idUser AND idSpace=:idSpace AND approved='n' LIMIT 1";
@@ -390,6 +410,84 @@
             $stmt = $db->prepare($sql);
             $stmt->execute(array(":idUser" => $idUser, ":idSpace" => $idSpace));
             return true;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function getPostsBySpace($idSpace) {
+	    $db = getConnection();
+	    $sql = "SELECT * FROM CWSpacePost WHERE idSpace=:idSpace AND idReplyTo IS NULL ORDER BY idSpacePost DESC";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("idSpace", $idSpace);
+		$stmt->execute();
+ 		return $stmt->fetchAll();
+	}
+
+	function getCommentsBySpacePost($idSpacePost) {
+	    $db = getConnection();
+	    $sql = "SELECT * FROM CWSpacePost WHERE idReplyTo=:idSpacePost ORDER BY idSpacePost";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("idSpacePost", $idSpacePost);
+		$stmt->execute();
+ 		return $stmt->fetchAll();
+	}
+
+	function addPostToSpace($idSpace, $idTenant, $message, $idReplyTo=0) {
+		if(isTenantOfSpace($idSpace, $idTenant))
+		{
+			$db = getConnection();
+			if($idReplyTo > 0)
+			{
+				$sql = "INSERT INTO CWSpacePost(idSpace, idTenant, message, idReplyTo) VALUES(:idSpace, :idTenant, :message, :idReplyTo)";
+				$stmt = $db->prepare($sql);
+				$stmt->execute(array(":idSpace" => $idSpace, ":idTenant" => $idTenant, ":message" => $message, ":idReplyTo" => $idReplyTo));
+			}
+		    else 
+		    {
+		    	$sql = "INSERT INTO CWSpacePost(idSpace, idTenant, message) VALUES(:idSpace, :idTenant, :message)";
+		    	$stmt = $db->prepare($sql);
+				$stmt->execute(array(":idSpace" => $idSpace, ":idTenant" => $idTenant, ":message" => $message));
+		    }
+		    
+	 		return true;
+		}
+	    else
+	    {
+	    	return false;
+	    }
+	}
+
+	function removeSpacePost($idPost, $idTenant) {
+		if(isOwnerOfSpacePost($idPost, $idTenant))
+		{
+			$db = getConnection();
+			$sql = "DELETE FROM CWSpacePost WHERE idSpacePost=:idPost";
+		    $stmt = $db->prepare($sql);
+			$stmt->execute(array(":idPost" => $idPost));
+	 		return true;
+		}
+	    else
+	    {
+	    	return false;
+	    }
+	}
+
+	function isOwnerOfSpacePost($idPost, $idTenant)
+	{
+		$sql = "SELECT * FROM CWSpacePost WHERE idTenant=:idTenant AND idSpacePost=:idPost";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idTenant", $idTenant);
+            $stmt->bindParam("idPost", $idPost);
+            $stmt->execute();
+            $post = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($post) {
+                return true;
+            }
+            return false;
         } catch(PDOException $e) {
             return false;
         }
