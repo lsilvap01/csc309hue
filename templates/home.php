@@ -81,17 +81,7 @@
           <p>Synergy Space is a coworking website for you to find the best place to work.  </p>
           <p><a class="btn btn-default" href="./about" role="button">View details &raquo;</a></p>
         </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p> </p>
-          <p><a class="btn btn-default" href="" role="button">View details &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p></p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
-      </div>
+       
 
     </div> <!-- /container -->
 
