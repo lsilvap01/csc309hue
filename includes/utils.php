@@ -15,6 +15,18 @@
         return $dbh;
     }
 
+    function addErrorMessage($errors, $message)
+	{
+	    if(empty($errors))
+	    {
+	        return $message;
+	    }
+	    else
+	    {
+	        return $errors . "<br/>" . $message;
+	    }
+	}
+
 	function emailExists($email)
 	{
 		$sql = "SELECT * FROM User WHERE email=:email";
@@ -139,7 +151,7 @@
 
 	function getSpacesByMember($idUser) {
 	    $db = getConnection();
-	    $sql = "SELECT c.* FROM CoworkingSpace c, Tenant t WHERE t.idUser=:idUser and c.idSpace = t.idSpace and t.approved='t' ORDER BY c.name";
+	    $sql = "SELECT c.* FROM CoworkingSpace c, Tenant t WHERE t.idUser=:idUser and c.idSpace = t.idSpace and t.approved='y' ORDER BY c.name";
 	    $stmt = $db->prepare($sql);
 	    $stmt->bindParam("idUser", $idUser);
 		$stmt->execute();
@@ -196,6 +208,109 @@
             $stmt = $db->prepare($sql);
             $stmt->execute(array(":idSpace" => $idSpace,
                         ":lease" => $lease));
+            return true;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function userIsMemberOfSpace($idUser, $idSpace)
+	{
+		$sql = "SELECT * FROM Tenant WHERE idUser=:idUser AND idSpace=:idSpace AND approved='y' LIMIT 1";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idUser", $idUser);
+            $stmt->bindParam("idSpace", $idSpace);
+            $stmt->execute();
+            $tenant = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($tenant) {
+                return true;
+            }
+            return isOwnerOfSpace($idUser, $idSpace);
+        } catch(PDOException $e) {
+            return isOwnerOfSpace($idUser, $idSpace);
+        }
+	}
+
+	function userHasSentRequestToSpace($idUser, $idSpace)
+	{
+		$sql = "SELECT * FROM Tenant WHERE idUser=:idUser AND idSpace=:idSpace AND approved='n' LIMIT 1";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idUser", $idUser);
+            $stmt->bindParam("idSpace", $idSpace);
+            $stmt->execute();
+            $tenant = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($tenant) {
+                return true;
+            }
+            return false;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function isOwnerOfSpace($idUser, $idSpace)
+	{
+		$sql = "SELECT * FROM CoworkingSpace WHERE idOwner=:idUser AND idSpace=:idSpace";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idUser", $idUser);
+            $stmt->bindParam("idSpace", $idSpace);
+            $stmt->execute();
+            $space = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($space) {
+                return true;
+            }
+            return false;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function sentRequestToSpace($idUser, $idSpace)
+	{
+		if(!userHasSentRequestToSpace($idUser, $idSpace) && !userIsMemberOfSpace($idUser, $idSpace))
+		{
+			$sql = "INSERT INTO Tenant(idUser, idSpace) VALUES(:idUser, :idSpace)";
+	        try {
+	            $db = getConnection();
+	            $stmt = $db->prepare($sql);
+	            $stmt->execute(array(":idUser" => $idUser, ":idSpace" => $idSpace));
+	            return true;
+	        } catch(PDOException $e) {
+	            return false;
+	        }
+	    }
+	    return false;
+	}
+
+	function aproveRequestToSpace($idUser, $idSpace)
+	{
+		$sql = "UPDATE Tenant SET approved='y' WHERE idUser=:idUser AND idSpace=:idSpace";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array(":idUser" => $idUser, ":idSpace" => $idSpace));
+            return true;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function rejectRequestToSpace($idUser, $idSpace)
+	{
+		$sql = "DELETE FROM Tenant WHERE idUser=:idUser AND idSpace=:idSpace";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array(":idUser" => $idUser, ":idSpace" => $idSpace));
             return true;
         } catch(PDOException $e) {
             return false;

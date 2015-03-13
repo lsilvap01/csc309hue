@@ -23,8 +23,8 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Menu <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="#">My Profile</a></li>
-            <li><a href="#">My Workspaces</a></li>
-            <li><a href="./space/new">New Space</a></li>
+            <li><a href="./me/spaces">My Workspaces</a></li>
+            <li><a href="./space/add">New Space</a></li>
             <li><a href="#">My Groups</a></li>
             <li class="divider"></li>
             <li><a href="./logout">Log Out</a></li>

@@ -32,7 +32,7 @@ $app->get('/', function () use ($app) {
     }
 });
 
-$app->get('/space/new', function () use ($app) {
+$app->get('/space/add', function () use ($app) {
     $app->render('newPlace.php', array('appName' => $app->getName(), "restricted" => true));
 });
 
@@ -67,7 +67,7 @@ $app->get('/signup', function () use ($app) {
     $app->render('signup.php', array('appName' => $app->getName()));
 });
 
-$app->post('/space/new', function () use ($app) {
+$app->post('/space/add', function () use ($app) {
     session_start();
     if(isset($_SESSION['userID']))
     {
@@ -419,6 +419,150 @@ $app->post('/user/:idUser/rate', function ($idUser) use ($app) {
     echo json_encode($aResponse);
 });
 
+$app->get('/me/spaces', function () use ($app) {
+    $app->render('mySpaces.php', array('appName' => $app->getName())); 
+});
+
+$app->get('/space/:idSpace/requestmembership', function ($idSpace) use ($app) {
+    session_start();
+    $app->response->headers->set('Content-Type', 'application/json');
+    if(isset($_SESSION['userID']))
+    {
+        $idUser = $_SESSION['userID'];
+        if(intval($idSpace) > 0)
+        {
+
+            $aResponse['error'] = false;
+            $aResponse['message'] = '';
+
+            if(!userIsMemberOfSpace($idUser, $idSpace))
+            {
+                if(!userHasSentRequestToSpace($idUser, $idSpace))
+                {
+                    if(sentRequestToSpace($idUser, $idSpace))
+                    {
+                        $aResponse['message'] = 'Your membership request has been successfuly sent.';
+                    }
+                    else
+                    {
+                        $aResponse['error'] = true;
+                        $aResponse['message'] = 'Something went wrong.';
+                    }
+                }
+                else
+                {
+                    $aResponse['error'] = true;
+                    $aResponse['message'] = 'You have already sent a membership request.';
+                }
+            }
+            else
+            {
+                $aResponse['error'] = true;
+                $aResponse['message'] = 'You are already a member.';
+            }
+        }
+        else
+        {
+            $aResponse['error'] = true;
+            $aResponse['message'] = 'Invalid parameters.';
+        }
+    }
+    else
+    {
+        $aResponse['error'] = true;
+        $aResponse['message'] = 'You must be logged in.';
+    }
+    echo json_encode($aResponse);
+});
+
+$app->get('/space/:idSpace/requestmembership/:idUser/accept', function ($idSpace, $idUser) use ($app) {
+    session_start();
+    $app->response->headers->set('Content-Type', 'application/json');
+    if(isset($_SESSION['userID']))
+    {
+        $idOwner = $_SESSION['userID'];
+        if(intval($idSpace) > 0 && intval($idUser) > 0)
+        {
+
+            $aResponse['error'] = false;
+            $aResponse['message'] = '';
+
+            if(isOwnerOfSpace($idOwner, $idSpace))
+            {
+                if(aproveRequestToSpace($idUser, $idSpace))
+                {
+                    $aResponse['message'] = 'You have successfuly accepted the request.';
+                }
+                else
+                {
+                    $aResponse['error'] = true;
+                    $aResponse['message'] = 'Something went wrong.';
+                }
+            }
+            else
+            {
+                $aResponse['error'] = true;
+                $aResponse['message'] = 'You do not have permission to perform this operation.';
+            }
+        }
+        else
+        {
+            $aResponse['error'] = true;
+            $aResponse['message'] = 'Invalid parameters.';
+        }
+    }
+    else
+    {
+        $aResponse['error'] = true;
+        $aResponse['message'] = 'You must be logged in.';
+    }
+    echo json_encode($aResponse);
+});
+
+$app->delete('/space/:idSpace/requestmembership/:idUser', function ($idSpace, $idUser) use ($app) {
+    session_start();
+    $app->response->headers->set('Content-Type', 'application/json');
+    if(isset($_SESSION['userID']))
+    {
+        $idOwner = $_SESSION['userID'];
+        if(intval($idSpace) > 0)
+        {
+
+            $aResponse['error'] = false;
+            $aResponse['message'] = '';
+
+            if(isOwnerOfSpace($idOwner, $idSpace))
+            {
+                if(rejectRequestToSpace($idUser, $idSpace))
+                {
+                    $aResponse['message'] = 'You have successfuly rejected the request.';
+                }
+                else
+                {
+                    $aResponse['error'] = true;
+                    $aResponse['message'] = 'Something went wrong.';
+                }
+            }
+            else
+            {
+                $aResponse['error'] = true;
+                $aResponse['message'] = 'You do not have permission to perform this operation.';
+            }
+        }
+        else
+        {
+            $aResponse['error'] = true;
+            $aResponse['message'] = 'Invalid parameters.';
+        }
+    }
+    else
+    {
+        $aResponse['error'] = true;
+        $aResponse['message'] = 'You must be logged in.';
+    }
+    echo json_encode($aResponse);
+});
+
 $app->get('/logout', function () use ($app) {
     session_start(); 
     session_unset(); 
@@ -427,18 +571,4 @@ $app->get('/logout', function () use ($app) {
 });
 
 $app->run();
-
-
-
-function addErrorMessage($errors, $message)
-{
-    if(empty($errors))
-    {
-        return $message;
-    }
-    else
-    {
-        return $errors . "<br/>" . $message;
-    }
-}
 ?>
