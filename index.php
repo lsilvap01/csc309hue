@@ -36,8 +36,8 @@ $app->get('/space/add', function () use ($app) {
     $app->render('newPlace.php', array('appName' => $app->getName(), "restricted" => true));
 });
 
-$app->get('/space', function () use ($app){
-	$app->render('space.php', array('appName' => $app->getName()));
+$app->get('/space(/(:idSpace))', function ($idSpace = 0) use ($app){
+	$app->render('space.php', array('appName' => $app->getName(), 'idSpace' => $idSpace));
 });
 
 $app->get('/login', function () use ($app) {
@@ -58,8 +58,6 @@ $app->get('/search(/:query)', function ($query = "") use ($app) {
         $app->render('search.php', array('appName' => $app->getName(), 'restricted' => true));
     }
 });
-
-
 
 $app->post('/login', function () use ($app) {
 	$email = $app->request->post('email');

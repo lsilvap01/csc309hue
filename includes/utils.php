@@ -109,6 +109,55 @@
             return 0;
         }
 	}
+	
+	function getSpaceRate($idSpace){
+			$sql = "SELECT * FROM coworkingspace WHERE idSpace = :idSpace";
+
+			try {
+				$db = getConnection();
+				$stmt = $db->prepare($sql);
+				$stmt->bindParam(":idSpace", $idSpace);
+				$stmt->execute();
+				$space = $stmt->fetch();
+				$db = null;
+				//return $space["reputation"]; 
+				return 0;
+			} catch(PDOException $e) {
+				return 0;
+			}	
+	}
+	
+	function getSpaceName($idSpace){
+		$sql = "SELECT name FROM coworkingspace WHERE idSpace = :idSpace";
+		try {
+			$db = getConnection();
+			$stmt = $db->prepare($sql);
+			$stmt->bindParam(":idSpace", $idSpace);
+			$stmt->execute();
+			$space = $stmt->fetch();
+			$db = null;
+			return $space["name"]; 
+		} catch(PDOException $e) {
+			return "Ops...";
+			//echo $e;
+		}	
+	}
+	
+	function getSpaceDescription($idSpace){
+		$sql = "SELECT description FROM coworkingspace WHERE idSpace = :idSpace";
+		try {
+			$db = getConnection();
+			$stmt = $db->prepare($sql);
+			$stmt->bindParam(":idSpace", $idSpace);
+			$stmt->execute();
+			$space = $stmt->fetch();
+			$db = null;
+			return $space["description"]; 
+		} catch(PDOException $e) {
+			return "Ops...";
+			//echo $e;
+		}	
+	}
 
 	function canRateUser($idUser, $idUserRated)
 	{
@@ -165,6 +214,35 @@
 	    $stmt->bindParam("idOwner", $idOwner);
 		$stmt->execute();
  		return $stmt->fetchAll();
+	}
+	
+	function getSpacesMembers($idSpace) {
+		$db = getConnection();
+	    $sql = "SELECT * FROM Tenant WHERE idSpace = :idSpace and approved = 'y'";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("idSpace", $idSpace);
+		$stmt->execute();
+ 		return $stmt->fetchAll();
+	}
+	
+	function getSpaceOwner($idSpace){
+		$db = getConnection();
+	    $sql = "SELECT idOwner FROM coworkingspace WHERE idSpace = :idSpace";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("idSpace", $idSpace);
+		$stmt->execute();
+		$space = $stmt->fetch();
+			
+		$idOwner = $space["idOwner"]; 
+		$sql2 = "SELECT name FROM user WHERE idUser = :idOwner";
+	    $stmt2 = $db->prepare($sql2);
+	    $stmt2->bindParam(":idOwner", $idOwner);
+		$stmt2->execute();
+		$owner = $stmt2->fetch();
+			
+		$db = null;
+		
+ 		return $owner["name"];
 	}
 
 	function getLastInsertedSpaceByOwner($idOwner)

@@ -1,13 +1,10 @@
+<?php include 'includes/sessionConfig.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+  <?php include 'includes/headers.php'; ?>
 
-    <title>Space || <?php echo $this->data['appName']; ?></title>
+    <title>Space <?php echo getSpaceName($idSpace); ?> || <?php echo $this->data['appName']; ?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -41,37 +38,21 @@
       </div>
     </nav>
 
-
-    <div class="container">
-
-      
-    <h2 class="form-signin-heading">Space 
-	
-	<?php 
-	$idSpace = 6;
-	$sql = "SELECT name FROM coworkingspace WHERE idSpace = :idSpace";
-	try {
-        $db = getConnection();
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(":idSpace", $idSpace);
-		$stmt->execute();
-        $space = $stmt->fetch();
-        $db = null;
-		echo $space["name"]; 
-	} catch(PDOException $e) {
-		echo "Ops...";
-		//echo $e;
-    }	
-	?>
-	
-	</h2>
-       
-
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <    <div class="jumbotron">
+      <div class="container">
+          <h2>Space <?php echo getSpaceName($idSpace); ?></h2>
+          <div class="rating" data-average="<?php echo getSpaceRate($this->data['idSpace']); ?>" data-id="<?php echo $this->data['idSpace'];?>"></div> <?php echo getSpaceRate($this->data['idSpace']); ?>/20
+          <p><?php echo getSpaceDescription($this->data['idSpace']); ?> </p>
+      </div> 
     </div>
+	
+	
+    <div class="container">
 
 <div> 
 	<?php 	
-	$idSpace = 6;
+	$idSpace = $this->data['idSpace'];
 	$sql = "SELECT * FROM photo WHERE idSpace = :idSpace";
 	try {
         $db = getConnection();
@@ -86,18 +67,18 @@
 		//echo $e;
     }	
 	?>
-	
-</div ><!-- final do carrosel -->
-
-
-
-
+</div >
 
  <h3> Members </h3> 
 <ol>
-<li> Maria </li>
-<li> Jose </li>
-<li> Joao </li>
+<?php echo "<li> ".getSpaceOwner($this->data['idSpace'])."</li>";?>
+<?php 
+	$myMembers = getSpacesMembers($this->data['idSpace']);
+    foreach ($myMembers as $member) { 
+	$user = getUserById($member["idUser"]);
+    echo "<li> ".$user["name"]."</li>";
+	}
+?>
 </ol>
 
 
