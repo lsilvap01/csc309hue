@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 12, 2015 at 10:34 PM
+-- Generation Time: Apr 06, 2015 at 05:50 AM
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `CoworkingSpace` (
   `leaseAgreement` varchar(150) DEFAULT NULL,
   `reputation` float DEFAULT NULL,
   `name` varchar(50) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `CoworkingSpace`
@@ -56,7 +56,10 @@ CREATE TABLE IF NOT EXISTS `CoworkingSpace` (
 
 INSERT INTO `CoworkingSpace` (`idSpace`, `idOwner`, `address`, `availableVacancies`, `price`, `description`, `leaseAgreement`, `reputation`, `name`) VALUES
 (4, 2, 'asdDas 2', 1, '50', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tincidunt, est at vestibulum ultricies, velit quam vehicula massa, egestas ornare sapien velit ac risus. Integer et ex id erat tincidunt dapibus. Curabitur ac erat et purus tristique scelerisque nec et elit. In sed maximus leo. Nam consequat risus nec euismod iaculis. In gravida nisl et lectus mollis, id porta turpis faucibus. Donec ut odio in augue vulputate hendrerit.', NULL, NULL, 'Space 1'),
-(5, 3, 'asdDas 2', 100, '50', 'asdfasdf', 'space5Lease.pdf', NULL, 'Space 2');
+(5, 3, 'asdDas 2', 100, '50', 'asdfasdf', 'space5Lease.pdf', NULL, 'Space 2'),
+(6, 3, 'asdDas 2', 100, '50', 'asdfasdf', 'space5Lease.pdf', NULL, 'Space 2'),
+(7, 3, 'asdDas 2', 100, '50', 'asdfasdf', 'space5Lease.pdf', NULL, 'Space 2'),
+(8, 3, 'asdDas 2', 100, '50', 'asdfasdf', 'space5Lease.pdf', NULL, 'Space 2');
 
 -- --------------------------------------------------------
 
@@ -70,7 +73,36 @@ CREATE TABLE IF NOT EXISTS `CWSpacePost` (
   `idSpace` int(11) DEFAULT NULL,
   `idTenant` int(11) DEFAULT NULL,
   `message` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `CWSpacePost`
+--
+
+INSERT INTO `CWSpacePost` (`idSpacePost`, `idReplyTo`, `idSpace`, `idTenant`, `message`) VALUES
+(1, NULL, 4, NULL, 'test'),
+(2, NULL, 4, NULL, 'test'),
+(3, NULL, 4, NULL, 'lala'),
+(4, NULL, 4, NULL, 'testeeee'),
+(5, NULL, 4, NULL, 'lalaaaa'),
+(6, 5, 4, NULL, 'ok'),
+(7, 3, 4, NULL, 'blabla'),
+(8, NULL, 5, 1, 'okok'),
+(9, NULL, 5, NULL, 'lalalalala'),
+(10, 9, 5, 1, 'alright'),
+(11, NULL, 5, 1, 'dfg'),
+(12, NULL, 5, 1, 'aa'),
+(13, NULL, 5, 1, 'cxc'),
+(14, NULL, 5, 1, 'asd'),
+(15, NULL, 5, 1, 'ffff'),
+(16, NULL, 5, 1, 'gg'),
+(17, 16, 5, 1, 'bla\nnene'),
+(18, 16, 5, 1, 'bla '''),
+(19, 16, 5, 1, 'asfa\naasd'),
+(20, NULL, 5, 1, 'multi<br />line'),
+(21, 20, 5, 1, 'multi<br />line<br />comment'),
+(22, NULL, 5, 1, '<b>teste</b>'),
+(23, NULL, 5, 1, '<');
 
 -- --------------------------------------------------------
 
@@ -114,7 +146,19 @@ CREATE TABLE IF NOT EXISTS `Team` (
 `idTeam` int(11) NOT NULL,
   `idSpace` int(11) DEFAULT NULL,
   `name` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `Team`
+--
+
+INSERT INTO `Team` (`idTeam`, `idSpace`, `name`) VALUES
+(1, 5, 'aasdf'),
+(2, 5, 'asdfasd'),
+(3, 5, 'asdfasd'),
+(4, 5, 'asdfasd'),
+(5, 5, 'lala'),
+(6, 5, 'lala');
 
 -- --------------------------------------------------------
 
@@ -125,8 +169,25 @@ CREATE TABLE IF NOT EXISTS `Team` (
 CREATE TABLE IF NOT EXISTS `TeamMember` (
 `idMember` int(11) NOT NULL,
   `idTeam` int(11) DEFAULT NULL,
-  `idTenant` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `idTenant` int(11) DEFAULT NULL,
+  `approved` char(1) NOT NULL DEFAULT 'n'
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `TeamMember`
+--
+
+INSERT INTO `TeamMember` (`idMember`, `idTeam`, `idTenant`, `approved`) VALUES
+(1, 1, 1, 'y'),
+(2, 1, NULL, 'y'),
+(3, 2, 1, 'y'),
+(4, 2, NULL, 'y'),
+(5, 3, 1, 'y'),
+(6, 3, NULL, 'y'),
+(7, 4, 1, 'y'),
+(8, 4, NULL, 'y'),
+(9, 5, 1, 'y'),
+(10, 6, 1, 'y');
 
 -- --------------------------------------------------------
 
@@ -155,7 +216,15 @@ CREATE TABLE IF NOT EXISTS `Tenant` (
   `spaceRating` float NOT NULL DEFAULT '0',
   `startDate` date DEFAULT NULL,
   `endDate` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `Tenant`
+--
+
+INSERT INTO `Tenant` (`idTenant`, `idUser`, `idSpace`, `approved`, `spaceRating`, `startDate`, `endDate`) VALUES
+(1, 2, 5, 'y', 14, '2015-03-12', NULL),
+(11, 2, 7, 'y', 0, '2015-03-12', NULL);
 
 -- --------------------------------------------------------
 
@@ -296,12 +365,12 @@ MODIFY `idAdmin` int(11) NOT NULL AUTO_INCREMENT;
 -- AUTO_INCREMENT for table `CoworkingSpace`
 --
 ALTER TABLE `CoworkingSpace`
-MODIFY `idSpace` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
+MODIFY `idSpace` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT for table `CWSpacePost`
 --
 ALTER TABLE `CWSpacePost`
-MODIFY `idSpacePost` int(11) NOT NULL AUTO_INCREMENT;
+MODIFY `idSpacePost` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=26;
 --
 -- AUTO_INCREMENT for table `Message`
 --
@@ -316,12 +385,12 @@ MODIFY `idPhoto` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 -- AUTO_INCREMENT for table `Team`
 --
 ALTER TABLE `Team`
-MODIFY `idTeam` int(11) NOT NULL AUTO_INCREMENT;
+MODIFY `idTeam` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT for table `TeamMember`
 --
 ALTER TABLE `TeamMember`
-MODIFY `idMember` int(11) NOT NULL AUTO_INCREMENT;
+MODIFY `idMember` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT for table `TeamPost`
 --
@@ -331,7 +400,7 @@ MODIFY `idTeamPost` int(11) NOT NULL AUTO_INCREMENT;
 -- AUTO_INCREMENT for table `Tenant`
 --
 ALTER TABLE `Tenant`
-MODIFY `idTenant` int(11) NOT NULL AUTO_INCREMENT;
+MODIFY `idTenant` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=12;
 --
 -- AUTO_INCREMENT for table `User`
 --

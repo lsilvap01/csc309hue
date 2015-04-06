@@ -7,7 +7,7 @@ require 'includes/utils.php';
 $app = new \Slim\Slim();
 $app->setName('Synergy Space');
 
-$site_url = "http://localhost/csc309hue/";
+$site_url = "http://localhost/csc309hue/";//"http://huecsc309.byethost22.com/";
 $upload_directory = "uploads/";
 
 
@@ -32,12 +32,290 @@ $app->get('/', function () use ($app) {
     }
 });
 
-$app->get('/space/new', function () use ($app) {
+$app->get('/space/add', function () use ($app) {
     $app->render('newPlace.php', array('appName' => $app->getName(), "restricted" => true));
 });
 
-$app->get('/space/:idSpace', function ($idSpace = 0) use ($app){
-		$app->render('space.php', array('appName' => $app->getName(), 'idSpace' => $idSpace));
+$app->get('/space/:idSpace', function ($idSpace) use ($app){
+    $space = getSpaceById($idSpace);
+    if($space)
+    {
+        $app->render('space.php', array('appName' => $app->getName(), 'space' => $space));
+    }
+	else
+    {
+        $app->redirect($GLOBALS['site_url']);
+    }
+});
+
+$app->get('/space/:idSpace/posts', function ($idSpace) use ($app){
+    session_start();
+    if(isset($_SESSION['userID']) && userIsMemberOfSpace($_SESSION['userID'], $idSpace))
+    {
+	    $space = getSpaceById($idSpace);
+	    $posts = getPostsBySpace($idSpace);
+	    if($space)
+	    {
+	        $app->render('spacePosts.php', array('appName' => $app->getName(), 'space' => $space, 'posts' => $posts));
+	    }
+		else
+	    {
+	        $app->redirect($GLOBALS['site_url']);
+	    }
+	}
+	else
+    {
+        $app->redirect($GLOBALS['site_url']);
+    }
+});
+
+$app->post('/space/:idSpace/post', function ($idSpace) use ($app){
+    session_start();
+    $app->response->headers->set('Content-Type', 'application/json');
+    if(isset($_SESSION['userID']))
+    {
+        if(intval($idSpace) > 0 && intval($app->request->post('replyTo')) >= 0)
+        {
+            $aResponse['error'] = false;
+            $aResponse['message'] = '';
+
+            
+            $id = intval($idSpace);
+            $replyTo = intval($app->request->post('replyTo'));
+            $message = $app->request->post('message');
+            $space = getSpaceById($id);
+
+            if($space)
+            {
+                if(userIsMemberOfSpace($_SESSION['userID'], $id))
+                {
+                    if($message)
+                    {
+                    	$tenant = getTenantByUserAndSpace($_SESSION['userID'], $id);
+                    	$idPost = addPostToSpace($id, $tenant['idTenant'], $message, $replyTo);
+                        if($idPost > 0)
+                        {
+                            $aResponse['message'] = 'Your post has been successfuly inserted.';
+                            $aResponse['idPost'] = $idPost;
+                        }
+                        else
+                        {
+                            $aResponse['error'] = true;
+                            $aResponse['message'] = 'An error occured during the request. Please retry';
+                        }
+                    }
+                    else
+                    {
+                        $aResponse['error'] = true;
+                        $aResponse['message'] = 'The field "message" cannot be empty.';
+                    }
+                }
+                else
+                {
+                    $aResponse['error'] = true;
+                    $aResponse['message'] = 'You cannot post in this space';
+                }
+            }
+            else
+            {
+                $aResponse['error'] = true;
+                $aResponse['message'] = 'Space does not exist';
+            }
+        }
+        else
+        {
+            $aResponse['error'] = true;
+            $aResponse['message'] = 'Invalid parameters';
+        }
+    }
+    else
+    {
+        $aResponse['error'] = true;
+        $aResponse['message'] = 'You must be logged in to rate a space';
+    }
+    echo json_encode($aResponse);
+});
+
+$app->get('/space/:idSpace/teams/new', function ($idSpace) use ($app){
+    session_start();
+    if(isset($_SESSION['userID']) && userIsMemberOfSpace($_SESSION['userID'], $idSpace))
+    {
+	    $space = getSpaceById($idSpace);
+	    if($space)
+	    {
+	        $app->render('newTeam.php', array('appName' => $app->getName(), 'space' => $space, 'members' => array()));
+	    }
+		else
+	    {
+	        $app->redirect($GLOBALS['site_url']);
+	    }
+	}
+	else
+    {
+        $app->redirect($GLOBALS['site_url']);
+    }
+});
+
+$app->post('/space/:idSpace/teams/new', function ($idSpace) use ($app){
+    session_start();
+    if(isset($_SESSION['userID']) && userIsMemberOfSpace($_SESSION['userID'], $idSpace))
+    {
+	    $space = getSpaceById($idSpace);
+	    if($space)
+	    {
+	    	$members = $app->request->post('members');
+	    	if(!$members || !is_array($members))
+	    	{
+	    		$members = array();
+	    	}
+	    	
+	    	$err = "";
+	        $name = $app->request->post('name');
+	        if(empty($name))
+	        {
+	            $err = addErrorMessage($err, "Name is required."); 
+	        }
+	        elseif (!preg_match("/^[a-zA-Z0-9 \d]*$/",$name)) {
+	          $err = addErrorMessage($err, "Only letters, numbers and white space allowed"); 
+	        }
+	        elseif (strlen($name) > 50) {
+	          $err = addErrorMessage($err, "The name must be at most 50 caracters long"); 
+	        }
+
+	        if(empty($err))
+	        {
+	            $sql = "INSERT INTO Team(idSpace, name) VALUES(:idSpace, :name)";
+	            try {
+	                $db = getConnection();
+	                $stmt = $db->prepare($sql);
+	                $stmt->execute(array(":idSpace" => $idSpace,
+	                            ":name" => $name));
+	                
+
+	                $idTeam = getLastInsertedTeamBySpaceId($idSpace);
+	                if($idTeam > 0)
+	                {
+	                	addMemberToTeam($_SESSION['userID'], $idTeam, 'y');
+	                	foreach ($members as $member) {
+	                		addMemberToTeam($member, $idTeam, 'y');
+	                	}
+	                	$app->redirect($GLOBALS['site_url']."space/".$idSpace."/team/".$idTeam);
+	                }      
+	            } catch(PDOException $e) {
+	                $app->render('newPlace.php', array('appName' => $app->getName(), 
+	                            'error' => 'Something went wrong. Try again.',
+	                            "name" => $name,
+	                            "members" => $members));
+	            }
+	        }
+	        else {
+	            
+	            $app->render('newTeam.php', array('appName' => $app->getName(), 
+	                        'error' => $err,
+	                        "name" => $name,
+	                        "members" => $members));
+	        }
+	    }
+		else
+	    {
+	        $app->redirect($GLOBALS['site_url']);
+	    }
+	}
+	else
+    {
+        $app->redirect($GLOBALS['site_url']);
+    }
+});
+
+$app->get('/space/:idSpace/team/:idTeam', function ($idSpace, $idTeam) use ($app){
+    $space = getSpaceById($idSpace);
+    $team = getTeamById($idTeam);
+    if($space && $team && intval($team['idSpace']) == intval($idSpace))
+    {
+        $app->render('team.php', array('appName' => $app->getName(), 'space' => $space, 'team' => $team));
+    }
+	else
+    {
+        $app->redirect($GLOBALS['site_url']);
+    }
+});
+
+$app->post('/space/:idSpace/rate', function ($idSpace) use ($app) {
+    session_start();
+    $app->response->headers->set('Content-Type', 'application/json');
+    if(isset($_SESSION['userID']))
+    {
+        if(intval($idSpace) > 0 && intval($app->request->post('rate')) >= 0)
+        {
+            $aResponse['error'] = false;
+            $aResponse['message'] = '';
+
+            if($app->request->post('action') != null)
+            {
+                if(htmlentities($app->request->post('action'), ENT_QUOTES, 'UTF-8') == 'rating')
+                {
+                    $id = intval($idSpace);
+                    $rate = intval($app->request->post('rate'));
+                    
+                    $space = getSpaceById($id);
+                    if($space)
+                    {
+                        if(userIsMemberOfSpace($_SESSION['userID'], $id))
+                        {
+                            if(intval($space['idOwner']) != intval($_SESSION['userID']))
+                            {
+                                if(rateSpace($_SESSION['userID'], $id, $rate))
+                                {
+                                    $aResponse['message'] = 'Your rate has been successfuly recorded. Thanks for your rate.';
+                                }
+                                else
+                                {
+                                    $aResponse['error'] = true;
+                                    $aResponse['message'] = 'An error occured during the request. Please retry';
+                                }
+                            }
+                            else
+                            {
+                                $aResponse['error'] = true;
+                                $aResponse['message'] = 'You cannot rate your own space';
+                            }
+                        }
+                        else
+                        {
+                            $aResponse['error'] = true;
+                            $aResponse['message'] = 'You cannot rate this space';
+                        }
+                    }
+                    else
+                    {
+                        $aResponse['error'] = true;
+                        $aResponse['message'] = 'Space does not exist';
+                    }
+                }
+                else
+                {
+                    $aResponse['error'] = true;
+                    $aResponse['message'] = '"action" post data not equal to \'rating\'';
+                }
+            }
+            else
+            {
+                $aResponse['error'] = true;
+                $aResponse['message'] = 'Something went wrong';
+            }
+        }
+        else
+        {
+            $aResponse['error'] = true;
+            $aResponse['message'] = 'Invalid parameters';
+        }
+    }
+    else
+    {
+        $aResponse['error'] = true;
+        $aResponse['message'] = 'You must be logged in to rate a space';
+    }
+    echo json_encode($aResponse);
 });
 
 $app->get('/login', function () use ($app) {
@@ -48,7 +326,7 @@ $app->get('/userProfile', function () use ($app) {
     $app->render('userProfile.php', array('appName' => $app->getName()));
 });
 
-$app->get('/search(/:query)', function ($query = "") use ($app) {
+$app->get('/search(/(:query))', function ($query = "") use ($app) {
     if(!empty($query))
     {
         $results = searchSpacesByQuery($query);
@@ -62,14 +340,14 @@ $app->get('/search(/:query)', function ($query = "") use ($app) {
 $app->post('/login', function () use ($app) {
 	$email = $app->request->post('email');
     $password = $app->request->post('password');
-    doLogin($email, $password, $app);
+    doLogin($email, $password);
 });
 
 $app->get('/signup', function () use ($app) {
     $app->render('signup.php', array('appName' => $app->getName()));
 });
 
-$app->post('/space/new', function () use ($app) {
+$app->post('/space/add', function () use ($app) {
     session_start();
     if(isset($_SESSION['userID']))
     {
@@ -294,7 +572,7 @@ $app->post('/signup', function () use ($app) {
                         ":password" => makeMD5($password),
                         ":gender" => $gender,
                         ":birthday" => $birthday));
-            doLogin($email, $password, $app);
+            doLogin($email, $password);
             //$app->redirect("/csc309hue/");
             
         } catch(PDOException $e) {

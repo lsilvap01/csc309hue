@@ -10,6 +10,10 @@
         $dbuser="root";
         $dbpass="";
         $dbname="csc309";
+        // $dbhost="sql206.byethost22.com";
+        // $dbuser="b22_15920833";
+        // $dbpass="huebrcsf";
+        // $dbname="b22_15920833_csc309";
         $dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $dbh;
@@ -46,13 +50,14 @@
         }
 	}
 
-	function doLogin($email, $password, $app) {
+	function doLogin($email, $password) {
 	    $sql = "SELECT * FROM User WHERE email=:email AND password=:password";
 	    try {
 	        $db = getConnection();
 	        $stmt = $db->prepare($sql);
 	        $stmt->bindParam("email", $email);
-	        $stmt->bindParam("password", makeMD5($password));
+	        $hashPass = makeMD5($password);
+	        $stmt->bindParam("password", $hashPass);
 	        $stmt->execute();
 	        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 	        $db = null;
@@ -63,12 +68,12 @@
 	            $_SESSION["email"] = $email;
 	            $_SESSION["gender"] = $user['gender'];
 	            $_SESSION["birthday"] = $user['birthdate'];
-	            $app->redirect("/csc309hue/");
+	            $GLOBALS['app']->redirect($GLOBALS['site_url']);
 	        }
 	        else
-	            $app->render('login.php', array('appName' => $app->getName(), 'error' => 'Invalid Email and/or Password.', 'email' => $email));
+	            $GLOBALS['app']->render('login.php', array('appName' => $GLOBALS['app']->getName(), 'error' => 'Invalid Email and/or Password.', 'email' => $email));
 	    } catch(PDOException $e) {
-	        $app->render('login.php', array('appName' => $app->getName(), 'error' => 'Something went wrong. Try again.', 'email' => $email));
+	        $GLOBALS['app']->render('login.php', array('appName' => $GLOBALS['app']->getName(), 'error' => 'Something went wrong. Try again.', 'email' => $email));
 	    }
 	}
 
@@ -84,6 +89,45 @@
             $db = null;
             if ($user) {
                 return $user;
+            }
+            return false;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function getUserByIdTenant($idTenant)
+	{
+		$sql = "SELECT idUser FROM Tenant WHERE idTenant=:idTenant";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idTenant", $idTenant);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($user) {
+                return getUserById($user['idUser']);
+            }
+            return false;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function getTenantByUserAndSpace($idUser, $idSpace)
+	{
+		$sql = "SELECT * FROM Tenant WHERE idUser=:idUser AND idSpace=:idSpace";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idUser", $idUser);
+            $stmt->bindParam("idSpace", $idSpace);
+            $stmt->execute();
+            $tenant = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($tenant) {
+                return $tenant;
             }
             return false;
         } catch(PDOException $e) {
@@ -109,26 +153,29 @@
             return 0;
         }
 	}
+
+	function getSpaceById($idSpace){
+		$sql = "SELECT * FROM CoworkingSpace WHERE idSpace = :idSpace";
+
+		try {
+			$db = getConnection();
+			$stmt = $db->prepare($sql);
+			$stmt->bindParam(":idSpace", $idSpace);
+			$stmt->execute();
+			$space = $stmt->fetch();
+			$db = null;
+			if ($space) {
+                return $space;
+            }
+        	return false;
+		} catch(PDOException $e) {
+			return false;
+		}	
+	}
 	
 	function getSpaceRate($idSpace){
-			$sql = "SELECT * FROM coworkingspace WHERE idSpace = :idSpace";
+		$sql = "SELECT FLOOR(avg(spaceRating)) as r FROM Tenant WHERE idSpace=:idSpace AND approved='y'";
 
-			try {
-				$db = getConnection();
-				$stmt = $db->prepare($sql);
-				$stmt->bindParam(":idSpace", $idSpace);
-				$stmt->execute();
-				$space = $stmt->fetch();
-				$db = null;
-				//return $space["reputation"]; 
-				return 0;
-			} catch(PDOException $e) {
-				return 0;
-			}	
-	}
-	
-	function getSpaceName($idSpace){
-		$sql = "SELECT name FROM coworkingspace WHERE idSpace = :idSpace";
 		try {
 			$db = getConnection();
 			$stmt = $db->prepare($sql);
@@ -136,32 +183,83 @@
 			$stmt->execute();
 			$space = $stmt->fetch();
 			$db = null;
-			return $space["name"]; 
+			if ($space && $space['r']) {
+                return $space['r'];
+            }
+			return 0;
 		} catch(PDOException $e) {
-			return "Ops...";
-			//echo $e;
+			return 0;
 		}	
 	}
-	
-	function getSpaceDescription($idSpace){
-		$sql = "SELECT description FROM coworkingspace WHERE idSpace = :idSpace";
-		try {
-			$db = getConnection();
-			$stmt = $db->prepare($sql);
-			$stmt->bindParam(":idSpace", $idSpace);
-			$stmt->execute();
-			$space = $stmt->fetch();
-			$db = null;
-			return $space["description"]; 
-		} catch(PDOException $e) {
-			return "Ops...";
-			//echo $e;
-		}	
+
+	function rateSpace($idUser, $idSpace, $rating)
+	{
+        try {
+            $db = getConnection();
+
+            $sql = "UPDATE Tenant SET spaceRating=:rating WHERE idUser=:idUser AND idSpace=:idSpace";
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array(":idUser" => $idUser,
+                        ":idSpace" => $idSpace,
+                        ":rating" => $rating));
+            return true;
+            
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function getActiveUserConnections($idUser)
+	{
+		$db = getConnection();
+		$sql = "SELECT * FROM User WHERE idUser in (select distinct(idUser) from tenant where idSpace in (select distinct(idSpace) from tenant where idUser = :idUser and approved = 'y' and endDate IS NULL UNION select distinct(idSpace) from coworkingspace where idOwner = :idUser) and idUser != :idUser and approved = 'y' and endDate is NULL" .
+			   " UNION select idOwner from coworkingspace where idSpace in (select distinct(idSpace) from tenant where idUser = :idUser and approved = 'y' and endDate IS NULL))";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("idUser", $idUser);
+		$stmt->execute();
+ 		return $stmt->fetchAll();
+	}
+
+	function getOldUserConnections($idUser)
+	{
+		$db = getConnection();
+		$sql = "SELECT * FROM User WHERE idUser in" .
+			   " (select DISTINCT(r.idUser) FROM (select DISTINCT(t.idUser) as idUser from tenant t, tenant t2 where t2.idUser = 2 and t2.approved = 'y' " . 
+			   "and t2.endDate IS NOT NULL and t.idUser != :idUser and t.idSpace = t2.idSpace and t.approved = 'y' and (t.endDate IS NULL OR t.endDate BETWEEN t2.startDate " .
+			   "AND t2.endDate) UNION select DISTINCT(t.idUser) as idUser from tenant t WHERE t.idSpace in (select idSpace from coworkingspace where idOwner = :idUser) and t.endDate IS NOT NULL) r " .
+               "WHERE r.idUser not in (select distinct(idUser) from tenant where idSpace in (select distinct(idSpace) from tenant where idUser = :idUser and approved = 'y' and endDate IS NULL" .
+               " UNION select distinct(idSpace) from coworkingspace where idOwner = :idUser) and idUser != :idUser and approved = 'y' and endDate is NULL)" . 
+			   " UNION select idOwner from coworkingspace where idSpace in (select distinct(idSpace) from tenant where idUser = :idUser and approved = 'y' and endDate IS NOT NULL))";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("idUser", $idUser);
+		$stmt->execute();
+ 		return $stmt->fetchAll();
+	}
+
+	function getAllUserConnections($idUser)
+	{
+		$old = getOldUserConnections($idUser);
+		$active = getActiveUserConnections($idUser);
+		if(!is_array($old))
+		{
+			$old = [];
+		}
+		
+		if(!is_array($active))
+		{
+			$active = [];
+		}
+		return array_merge($old, $active);
 	}
 
 	function canRateUser($idUser, $idUserRated)
 	{
-		return true;
+		$connections = getAllUserConnections($idUser);
+		$return = false;
+		foreach ($connections as $user) {
+			$return = intval($user['idUser']) == intval($idUserRated);
+		}
+		return $return;
 	}
 
 	function rateUser($idUser, $idUserRated, $rating)
@@ -216,33 +314,50 @@
  		return $stmt->fetchAll();
 	}
 	
-	function getSpacesMembers($idSpace) {
+	function getSpaceMembers($idSpace) {
 		$db = getConnection();
-	    $sql = "SELECT * FROM Tenant WHERE idSpace = :idSpace and approved = 'y'";
+	    $sql = "SELECT u.* FROM Tenant t, User u WHERE u.idUser=t.idUser AND t.idSpace = :idSpace and t.approved = 'y'";
 	    $stmt = $db->prepare($sql);
 	    $stmt->bindParam("idSpace", $idSpace);
 		$stmt->execute();
  		return $stmt->fetchAll();
 	}
-	
-	function getSpaceOwner($idSpace){
+
+	function getSpaceTeams($idSpace) {
 		$db = getConnection();
-	    $sql = "SELECT idOwner FROM coworkingspace WHERE idSpace = :idSpace";
+	    $sql = "SELECT * FROM Team WHERE idSpace = :idSpace";
 	    $stmt = $db->prepare($sql);
 	    $stmt->bindParam("idSpace", $idSpace);
 		$stmt->execute();
-		$space = $stmt->fetch();
-			
-		$idOwner = $space["idOwner"]; 
-		$sql2 = "SELECT name FROM user WHERE idUser = :idOwner";
-	    $stmt2 = $db->prepare($sql2);
-	    $stmt2->bindParam(":idOwner", $idOwner);
-		$stmt2->execute();
-		$owner = $stmt2->fetch();
-			
-		$db = null;
-		
- 		return $owner["name"];
+ 		return $stmt->fetchAll();
+	}
+
+	function getSpaceOwner($idSpace) {
+		$db = getConnection();
+	    $sql = "SELECT u.* FROM User u, CoworkingSpace c WHERE u.idUser=c.idOwner AND c.idSpace = :idSpace";
+	    try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idSpace", $idSpace);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($user) {
+                return $user;
+            }
+            return false;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function getSpaceRequests($idSpace) {
+		$db = getConnection();
+	    $sql = "SELECT u.* FROM Tenant t, User u WHERE u.idUser=t.idUser AND t.idSpace = :idSpace and t.approved = 'n'";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("idSpace", $idSpace);
+		$stmt->execute();
+ 		return $stmt->fetchAll();
 	}
 
 	function getLastInsertedSpaceByOwner($idOwner)
@@ -314,22 +429,8 @@
 
 	function isTenantOfSpace($idTenant, $idSpace)
 	{
-		$sql = "SELECT * FROM Tenant WHERE idTenant=:idTenant AND idSpace=:idSpace AND approved='y' LIMIT 1";
-        try {
-            $db = getConnection();
-            $stmt = $db->prepare($sql);
-            $stmt->bindParam("idTenant", $idTenant);
-            $stmt->bindParam("idSpace", $idSpace);
-            $stmt->execute();
-            $tenant = $stmt->fetch(PDO::FETCH_ASSOC);
-            $db = null;
-            if ($tenant) {
-                return true;
-            }
-            return false;
-        } catch(PDOException $e) {
-            return false;
-        }
+		$user = getUserByIdTenant($idTenant);
+		return userIsMemberOfSpace($user['idUser'], $idSpace);
 	}
 
 	function userHasSentRequestToSpace($idUser, $idSpace)
@@ -391,7 +492,7 @@
 
 	function aproveRequestToSpace($idUser, $idSpace)
 	{
-		$sql = "UPDATE Tenant SET approved='y' WHERE idUser=:idUser AND idSpace=:idSpace";
+		$sql = "UPDATE Tenant SET approved='y', startDate=now() WHERE idUser=:idUser AND idSpace=:idSpace";
         try {
             $db = getConnection();
             $stmt = $db->prepare($sql);
@@ -421,7 +522,17 @@
 	    $stmt = $db->prepare($sql);
 	    $stmt->bindParam("idSpace", $idSpace);
 		$stmt->execute();
- 		return $stmt->fetchAll();
+		$results = $stmt->fetchAll();
+		$posts = array();
+		foreach ($results as $post) {
+			$p = array();
+			foreach ($post as $key => $value) {
+				$p[$key] = $value;
+			}
+			$p['comments'] = getCommentsBySpacePost($post['idSpacePost']);
+			array_push($posts, $p);
+		}
+ 		return $posts;
 	}
 
 	function getCommentsBySpacePost($idSpacePost) {
@@ -430,11 +541,16 @@
 	    $stmt = $db->prepare($sql);
 	    $stmt->bindParam("idSpacePost", $idSpacePost);
 		$stmt->execute();
- 		return $stmt->fetchAll();
+		$comments = $stmt->fetchAll();
+		if(!$comments)
+		{
+			$comments = array();
+		}
+ 		return $comments;
 	}
 
 	function addPostToSpace($idSpace, $idTenant, $message, $idReplyTo=0) {
-		if(isTenantOfSpace($idSpace, $idTenant))
+		if($idTenant == null || isTenantOfSpace($idTenant, $idSpace))
 		{
 			$db = getConnection();
 			if($idReplyTo > 0)
@@ -450,12 +566,43 @@
 				$stmt->execute(array(":idSpace" => $idSpace, ":idTenant" => $idTenant, ":message" => $message));
 		    }
 		    
-	 		return true;
+	 		return getLastInsertedPostSpaceByTenant($idTenant, $idSpace);
 		}
 	    else
 	    {
-	    	return false;
+	    	return 0;
 	    }
+	}
+
+	function getLastInsertedPostSpaceByTenant($idTenant, $idSpace)
+	{
+		if($idTenant)
+		{
+			$sql = "SELECT idSpacePost FROM CWSpacePost WHERE idTenant=:idTenant AND idSpace=:idSpace ORDER BY idSpace DESC LIMIT 1";
+		}
+		else
+		{
+			$sql = "SELECT idSpacePost FROM CWSpacePost WHERE idTenant IS NULL AND idSpace=:idSpace ORDER BY idSpace DESC LIMIT 1";
+		}
+
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            if($idTenant)
+			{
+           		$stmt->bindParam("idTenant", $idTenant);
+           	}
+            $stmt->bindParam("idSpace", $idSpace);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($user) {
+                return $user['idSpacePost'];
+            }
+            return 0;
+        } catch(PDOException $e) {
+            return 0;
+        }
 	}
 
 	function removeSpacePost($idPost, $idTenant) {
@@ -490,6 +637,333 @@
             return false;
         } catch(PDOException $e) {
             return false;
+        }
+	}
+
+	function getLastInsertedTeamBySpaceId($idSpace)
+	{
+		$sql = "SELECT idTeam FROM Team WHERE idSpace=:idSpace ORDER BY idTeam DESC LIMIT 1";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idSpace", $idSpace);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($user) {
+                return $user['idTeam'];
+            }
+            return 0;
+        } catch(PDOException $e) {
+            return 0;
+        }
+	}
+
+	function getTeamById($idTeam){
+		$sql = "SELECT * FROM Team WHERE idTeam = :idTeam";
+
+		try {
+			$db = getConnection();
+			$stmt = $db->prepare($sql);
+			$stmt->bindParam(":idTeam", $idTeam);
+			$stmt->execute();
+			$team = $stmt->fetch();
+			$db = null;
+			if ($team) {
+                return $team;
+            }
+        	return false;
+		} catch(PDOException $e) {
+			return false;
+		}	
+	}
+
+	function addMemberToTeam($idUser, $idTeam, $approved = 'n') {
+		$team = getTeamById($idTeam);
+		if($team)
+		{
+			if(isOwnerOfSpace($idUser, $team['idSpace']))
+			{
+				$db = getConnection();
+				$sql = "INSERT INTO TeamMember(idTeam, approved) VALUES(:idTeam, :approved)";
+			    $stmt = $db->prepare($sql);
+				$stmt->execute(array(":idTeam" => $idTeam, ":approved" => $approved));
+		 		return true;
+			}
+			else
+		    {
+		    	$db = getConnection();
+				$sql = "INSERT INTO TeamMember(idTeam, idTenant, approved) VALUES(:idTeam, :idTenant, :approved)";
+			    $stmt = $db->prepare($sql);
+			    $tenant = getTenantByUserAndSpace($idUser, $team['idSpace']);
+				$stmt->execute(array(":idTeam" => $idTeam, ":idTenant" => $tenant['idTenant'], ":approved" => $approved));
+		 		return true;
+		    }
+		}
+	    else
+	    {
+	    	return false;
+	    }
+	}
+
+
+	function userIsMemberOfTeam($idUser, $idTeam)
+	{
+		$team = getTeamById($idTeam);
+		if($team)
+		{
+			$isOwner = isOwnerOfSpace($idUser, $team['idSpace']);
+			if($isOwner)
+			{
+				$sql = "SELECT * FROM TeamMember WHERE idTeam=:idTeam AND idTenant IS NULL AND approved='y' LIMIT 1";
+			}
+			else
+			{
+				$sql = "SELECT * FROM TeamMember tm, Team t, Tenant te WHERE tm.idTeam=t.idTeam AND t.idTeam=:idTeam AND tm.idTenant=te.idTenant AND te.idUser=:idUser AND te.idSpace=t.idSpace AND approved='y' LIMIT 1";
+			}
+	        try {
+	            $db = getConnection();
+	            $stmt = $db->prepare($sql);
+	            if (!$isOwner) {
+	            	$stmt->bindParam("idUser", $idUser);
+	            }
+	            $stmt->bindParam("idTeam", $idTeam);
+	            $stmt->execute();
+	            $teammember = $stmt->fetch(PDO::FETCH_ASSOC);
+	            $db = null;
+	            if ($teammember) {
+	                return true;
+	            }
+	            return false;
+	        } catch(PDOException $e) {
+	            return false;
+	        }
+	    }
+	    return false;
+	}
+
+	function isTenantOfTeam($idTenant, $idSpace)
+	{
+		$user = getUserByIdTenant($idTenant);
+		return userIsMemberOfSpace($user['idUser'], $idSpace);
+	}
+
+	function userHasSentRequestToTeam($idUser, $idTeam)
+	{
+		$team = getTeamById($idTeam);
+		if($team)
+		{
+			$isOwner = isOwnerOfSpace($idUser, $team['idSpace']);
+			if($isOwner)
+			{
+				$sql = "SELECT * FROM TeamMember WHERE idTeam=:idTeam AND idTenant IS NULL AND approved='n' LIMIT 1";
+			}
+			else
+			{
+				$sql = "SELECT t.* FROM TeamMember tm, Team t, Tenant te WHERE tm.idTeam=t.idTeam AND t.idTeam=:idTeam AND tm.idTenant=te.idTenant AND te.idUser=:idUser AND te.idSpace=t.idSpace AND approved='n' LIMIT 1";
+			}
+	        try {
+	            $db = getConnection();
+	            $stmt = $db->prepare($sql);
+	            if (!$isOwner) {
+	            	$stmt->bindParam("idUser", $idUser);
+	            }
+	            $stmt->bindParam("idTeam", $idTeam);
+	            $stmt->execute();
+	            $teammember = $stmt->fetch(PDO::FETCH_ASSOC);
+	            $db = null;
+	            if ($teammember) {
+	                return true;
+	            }
+	            return false;
+	        } catch(PDOException $e) {
+	            return false;
+	        }
+	    }
+	    return false;
+	}
+
+	function isOwnerOfTeam($idUser, $idTeam)
+	{
+		$sql = "SELECT * FROM CoworkingSpace WHERE idOwner=:idUser AND idSpace=:idSpace";
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("idUser", $idUser);
+            $stmt->bindParam("idSpace", $idSpace);
+            $stmt->execute();
+            $space = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($space) {
+                return true;
+            }
+            return false;
+        } catch(PDOException $e) {
+            return false;
+        }
+	}
+
+	function sentRequestToTeam($idUser, $idTeam)
+	{
+		if(!userHasSentRequestToTeam($idUser, $idTeam) && !userIsMemberOfTeam($idUser, $idTeam))
+		{
+			return addMemberToTeam($idUser, $idTeam);
+	    }
+	    return false;
+	}
+
+	function aproveRequestToTeam($idUser, $idTeam)
+	{
+		$team = getTeamById($idTeam);
+		if($team)
+		{
+			$isOwner = isOwnerOfSpace($idUser, $team['idSpace']);
+			if($isOwner)
+			{
+				$sql = "UPDATE TeamMember SET approved='y' WHERE idTenant IS NULL AND idTeam=:idTeam";
+			}
+			else
+			{
+				$sql = "UPDATE TeamMember SET approved='y' WHERE idTenant=(SELECT idTenant FROM Tenant WHERE idUser:idUser and idSpace=:idSpace) AND idTeam=:idTeam";
+			}
+	        try {
+	            $db = getConnection();
+	            $stmt = $db->prepare($sql);
+	            if($isOwner)
+	            {
+	            	$stmt->execute(array(":idTeam" => $idTeam));
+	            }
+	            else
+	            {
+	            	$stmt->execute(array(":idUser" => $idUser, ":idSpace" => $team['idSpace'], ":idTeam" => $idTeam));
+	            }
+	            return true;
+	        } catch(PDOException $e) {
+	            return false;
+	        }
+	    }
+	    return false;
+	}
+
+	function rejectRequestToTeam($idUser, $idTeam)
+	{
+		$team = getTeamById($idTeam);
+		if($team)
+		{
+			$isOwner = isOwnerOfSpace($idUser, $team['idSpace']);
+			if($isOwner)
+			{
+				$sql = "DELETE FROM TeamMember WHERE idTenant IS NULL AND idTeam=:idTeam";
+			}
+			else
+			{
+				$sql = "DELETE FROM TeamMember WHERE idTenant=(SELECT idTenant FROM Tenant WHERE idUser:idUser and idSpace=:idSpace) AND idTeam=:idTeam";
+			}
+	        try {
+	            $db = getConnection();
+	            $stmt = $db->prepare($sql);
+	            if($isOwner)
+	            {
+	            	$stmt->execute(array(":idTeam" => $idTeam));
+	            }
+	            else
+	            {
+	            	$stmt->execute(array(":idUser" => $idUser, ":idSpace" => $team['idSpace'], ":idTeam" => $idTeam));
+	            }
+	            return true;
+	        } catch(PDOException $e) {
+	            return false;
+	        }
+	    }
+	    return false;
+	}
+
+	function getPostsByTeam($idTeam) {
+	    $db = getConnection();
+	    $sql = "SELECT * FROM TeamPost WHERE idSpace=:idSpace AND idReplyTo IS NULL ORDER BY idSpacePost DESC";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("idSpace", $idSpace);
+		$stmt->execute();
+		$results = $stmt->fetchAll();
+		$posts = array();
+		foreach ($results as $post) {
+			$p = array();
+			foreach ($post as $key => $value) {
+				$p[$key] = $value;
+			}
+			$p['comments'] = getCommentsBySpacePost($post['idSpacePost']);
+			array_push($posts, $p);
+		}
+ 		return $posts;
+	}
+
+	function getCommentsByTeamPost($idSpacePost) {
+	    $db = getConnection();
+	    $sql = "SELECT * FROM TeamPost WHERE idReplyTo=:idSpacePost ORDER BY idSpacePost";
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam("idSpacePost", $idSpacePost);
+		$stmt->execute();
+		$comments = $stmt->fetchAll();
+		if(!$comments)
+		{
+			$comments = array();
+		}
+ 		return $comments;
+	}
+
+	function addPostToTeam($idSpace, $idTenant, $message, $idReplyTo=0) {
+		if($idTenant == null || isTenantOfSpace($idTenant, $idSpace))
+		{
+			$db = getConnection();
+			if($idReplyTo > 0)
+			{
+				$sql = "INSERT INTO TeamPost(idSpace, idTenant, message, idReplyTo) VALUES(:idSpace, :idTenant, :message, :idReplyTo)";
+				$stmt = $db->prepare($sql);
+				$stmt->execute(array(":idSpace" => $idSpace, ":idTenant" => $idTenant, ":message" => $message, ":idReplyTo" => $idReplyTo));
+			}
+		    else 
+		    {
+		    	$sql = "INSERT INTO TeamPost(idSpace, idTenant, message) VALUES(:idSpace, :idTenant, :message)";
+		    	$stmt = $db->prepare($sql);
+				$stmt->execute(array(":idSpace" => $idSpace, ":idTenant" => $idTenant, ":message" => $message));
+		    }
+		    
+	 		return getLastInsertedPostSpaceByTenant($idTenant, $idSpace);
+		}
+	    else
+	    {
+	    	return 0;
+	    }
+	}
+
+	function getLastInsertedPostTeamByTenant($idTenant, $idSpace)
+	{
+		if($idTenant)
+		{
+			$sql = "SELECT idSpacePost FROM TeamPost WHERE idTenant=:idTenant AND idSpace=:idSpace ORDER BY idSpace DESC LIMIT 1";
+		}
+		else
+		{
+			$sql = "SELECT idSpacePost FROM TeamPost WHERE idTenant IS NULL AND idSpace=:idSpace ORDER BY idSpace DESC LIMIT 1";
+		}
+
+        try {
+            $db = getConnection();
+            $stmt = $db->prepare($sql);
+            if($idTenant)
+			{
+           		$stmt->bindParam("idTenant", $idTenant);
+           	}
+            $stmt->bindParam("idSpace", $idSpace);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $db = null;
+            if ($user) {
+                return $user['idSpacePost'];
+            }
+            return 0;
+        } catch(PDOException $e) {
+            return 0;
         }
 	}
 ?>

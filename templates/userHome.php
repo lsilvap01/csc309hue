@@ -34,6 +34,32 @@
 
     <div class="container">
       <!-- Example row of columns -->
+      <h1><?php if($_SESSION['userID'] == $this->data['user']['idUser']) { ?>My Active Connections (friends)<?php } else { ?>Active Connections (friends) of <?php echo explode(" ", $this->data['user']['name'])[0]; ?><?php } ?></h1>
+      <ul id="spaceMembers">
+        <?php 
+          $activeConnections = getActiveUserConnections($this->data['user']['idUser']);
+          foreach ($activeConnections as $friend) {
+            echo "<li> <a href='./user/".$friend['idUser']."'>".$friend["name"]."</a></li>";
+          }
+          if(count($activeConnections) == 0)
+          {
+            echo "<li>There is no active connections.</li>"; 
+          }
+        ?>
+      </ul>
+      <h1><?php if($_SESSION['userID'] == $this->data['user']['idUser']) { ?>My Old Connections (friends)<?php } else { ?>Old Connections (friends) of <?php echo explode(" ", $this->data['user']['name'])[0]; ?><?php } ?></h1>
+      <ul id="spaceMembers">
+        <?php 
+          $oldConnections = getOldUserConnections($this->data['user']['idUser']);
+          foreach ($oldConnections as $friend) {
+            echo "<li> <a href='./user/".$friend['idUser']."'>".$friend["name"]."</a></li>";
+          }
+          if(count($oldConnections) == 0)
+          {
+            echo "<li>There is no old connections.</li>"; 
+          }
+        ?>
+      </ul>
       <h1><?php if($_SESSION['userID'] == $this->data['user']['idUser']) { ?>My Coworking Spaces<?php } else { ?>Coworking Spaces of <?php echo explode(" ", $this->data['user']['name'])[0]; ?><?php } ?></h1>
       
         <?php $mySpaces = getSpacesByOwner($this->data["user"]["idUser"]);
@@ -117,7 +143,7 @@
     <script type="text/javascript" src="js/jRating.jquery.js"></script>
     <script type="text/javascript">
       $(document).ready(function(){
-        <?php if($_SESSION['userID'] == $this->data['user']['idUser']) { ?>
+        <?php if(!canRateUser($_SESSION['userID'], $this->data['user']['idUser'])) { ?>
           $('.rating').jRating({
             isDisabled : true
           });

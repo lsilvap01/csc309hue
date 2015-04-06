@@ -8,7 +8,7 @@
 	
 	if($this->data['restricted'] == true && !$logado)
 	{
-		header("Location: /csc309hue/");
+		header("Location: " . $GLOBALS['site_url']);
 		die();
 	}
 ?>

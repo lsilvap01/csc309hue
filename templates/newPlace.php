@@ -39,7 +39,7 @@
           <div class="form-group">
             <label class="col-md-4 control-label" for="name">Name</label>  
             <div class="col-md-4">
-            <input id="name" maxlength="50" name="name" type="text"value="<?php echo $this->data['name']; ?>" placeholder="" class="form-control input-md" required />
+            <input id="name" maxlength="50" name="name" type="text" value="<?php echo $this->data['name']; ?>" placeholder="" class="form-control input-md" required />
               
             </div>
           </div>

@@ -1,0 +1,471 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"repla",
+				"replaceVarsLet"
+			],
+			[
+				"key",
+				"keyValue"
+			],
+			[
+				"An",
+				"AnonymousProcedure"
+			],
+			[
+				"pa",
+				"parseExprVars"
+			],
+			[
+				"pro",
+				"prohibitedNames"
+			],
+			[
+				"el",
+				"elem"
+			],
+			[
+				"Bo",
+				"Bool"
+			],
+			[
+				"par",
+				"params"
+			],
+			[
+				"con",
+				"condAfterElse"
+			],
+			[
+				"cond",
+				"conds"
+			],
+			[
+				"sam",
+				"sameType"
+			],
+			[
+				"sho",
+				"show"
+			],
+			[
+				"C",
+				"Compound"
+			],
+			[
+				"Not",
+				"Nothing"
+			],
+			[
+				"E",
+				"Expr"
+			],
+			[
+				"le",
+				"length"
+			],
+			[
+				"is",
+				"isList"
+			],
+			[
+				"S",
+				"String"
+			],
+			[
+				"l",
+				"llength"
+			],
+			[
+				"Bol",
+				"Boolean"
+			],
+			[
+				"v",
+				"v1"
+			],
+			[
+				"Int",
+				"Integer"
+			],
+			[
+				"Eq",
+				"Equal"
+			],
+			[
+				"parse",
+				"parseExpr"
+			],
+			[
+				"Sy",
+				"SyntaxError"
+			],
+			[
+				"user",
+				"userName"
+			],
+			[
+				"spa",
+				"spaceMembers"
+			],
+			[
+				"req",
+				"request"
+			],
+			[
+				"acc",
+				"acceptRequest"
+			],
+			[
+				"me",
+				"member"
+			],
+			[
+				"id",
+				"idTenant"
+			],
+			[
+				"idUs",
+				"idUser"
+			],
+			[
+				"in",
+				"intval"
+			],
+			[
+				"su",
+				"successfuly"
+			],
+			[
+				"ar",
+				"array"
+			],
+			[
+				"app",
+				"approved"
+			],
+			[
+				"ret",
+				"return"
+			],
+			[
+				"Cow",
+				"CoworkingSpace"
+			],
+			[
+				"num",
+				"numberSpots"
+			],
+			[
+				"err",
+				"errors"
+			],
+			[
+				"uplo",
+				"upload"
+			],
+			[
+				"up",
+				"upload"
+			],
+			[
+				"_",
+				"_SESSION"
+			],
+			[
+				"is_n",
+				"is_numeric"
+			],
+			[
+				"re",
+				"required"
+			],
+			[
+				"for",
+				"format"
+			],
+			[
+				"mar",
+				"margin-right"
+			],
+			[
+				"sess",
+				"session_start"
+			],
+			[
+				"si",
+				"site_url"
+			],
+			[
+				"idU",
+				"idUser"
+			],
+			[
+				"i",
+				"idUser"
+			],
+			[
+				"json",
+				"json_encode"
+			],
+			[
+				"is_i",
+				"is_int"
+			],
+			[
+				"inclu",
+				"includes"
+			],
+			[
+				"csc",
+				"csc309hue"
+			],
+			[
+				"strto",
+				"strtotime"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"rege",
+				"regex"
+			],
+			[
+				"em",
+				"email"
+			],
+			[
+				"print",
+				"print_r"
+			],
+			[
+				"ac",
+				"action	Attr"
+			],
+			[
+				"pas",
+				"password"
+			],
+			[
+				"ma",
+				"margin-top"
+			],
+			[
+				"te",
+				"text-align"
+			],
+			[
+				"wid",
+				"width"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 67.0,
+		"selected_items":
+		[
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/lucasdasilva/Documents/UofT/CSC324/A2/BaseParser.hs",
+		"/Users/lucasdasilva/Documents/UofT/CSC324/A2/Interpreter.hs",
+		"/Users/lucasdasilva/Documents/UofT/CSC324/A2/Sample.rkt",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/js/jRatingSpace.jquery.js",
+		"/Users/lucasdasilva/Documents/BaseParser.hs",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/templates/newPlace.php",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/includes/jsFiles.php",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/js/jRatingSpace.jquery copy.js",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/templates/signup.php",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/js/mask.jquery.js",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/templates/home.php",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/includes/headers.php",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/css/style.css",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/templates/about.php",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/includes/userMenu.php",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/css/signin.css",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/js/jRating.jquery.css",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/banco.sql",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/templates/login.php",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/templates/sessionConfig.php",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/utils.php",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/ie10-viewport-bug-workaround.js",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309hue/templates/signin.css",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309/templates/login.php",
+		"/Applications/XAMPP/xamppfiles/htdocs/csc309/index.php",
+		"/Users/lucasdasilva/Documents/csc309/index.php",
+		"/private/var/folders/5d/jmbh2nvs5jl72vzyk44679y40000gn/T/fz3temp-1/index.php",
+		"/Users/lucasdasilva/Documents/csc309/composer.json",
+		"/Users/lucasdasilva/Documents/lsilvap01-personal-repo/README.md",
+		"/Users/lucasdasilva/Documents/lsilvap01-personal-repo/TeamEvaluation.md",
+		"/Users/lucasdasilva/Documents/style.css",
+		"/Users/lucasdasilva/Documents/teste.html",
+		"/Users/lucasdasilva/Documents/map.html",
+		"/Users/lucasdasilva/Downloads/Nightcrawler (2014) 720p HDRip HC x264 AC3-CPG.EN.srt"
+	],
+	"find":
+	{
+		"height": 22.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"f",
+			"doL",
+			"member",
+			"php",
+			"ajax",
+			"empty",
+			"isempty",
+			"php",
+			"user",
+			"site_url",
+			"site_ur",
+			"site_url",
+			"nbOfRates",
+			"nbRates",
+			"nbOfRates",
+			"canRateAgain",
+			"redire",
+			"jquery",
+			"/*********************/",
+			"stars",
+			"'()",
+			"quote"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 22.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "index.sublime-project",
+	"replace":
+	{
+		"height": 40.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

@@ -27,85 +27,14 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
-          <h2>Space <?php echo $this->data['space']['name']; ?></h2>
-          <?php if(!userIsMemberOfSpace($_SESSION['userID'], $this->data['space']['idSpace'])) { 
-                  if(userHasSentRequestToSpace($_SESSION['userID'], $this->data['space']['idSpace'])) { ?>
-                    <a class="btn btn-success" role="button">Request sent</a>
-            <?php } 
-                  else 
-                  { ?>
-                    <a class="btn btn-success sendMembershipRequest" href="#" role="button">Become a member</a>
-          <?php 
-                  }
-                }
-                else 
-                { ?>
-                  <a class="btn btn-success" href="./space/<?php echo $this->data['space']['idSpace'] ?>/posts" role="button">See posts</a>
-          <?php } ?>      
-          <?php echo "<h3>Owner: <a href='./user/".$this->data['space']['idOwner']."'>".getUserById($this->data['space']['idOwner'])['name']."</a></h3>";?>
-          <div class="rating" data-average="<?php echo getSpaceRate($this->data['space']['idSpace']); ?>" data-id="<?php echo $this->data['space']['idSpace'];?>"></div> <?php echo getSpaceRate($this->data['space']['idSpace']); ?>/20
-          <?php echo userIsMemberOfSpace($_SESSION['userID'], $this->data['space']['idSpace'])? ((intval($this->data['space']['idOwner']) == intval($_SESSION['userID']))? "(*You cannot rate your own coworking space)" : "") :"(*You have to be a member to rate this coworking space)"; ?>
-          <p><?php echo $this->data['space']['description']; ?> </p>
+          <h2>Space <?php echo $this->data['space']['name']; ?> > <?php echo $this->data['team']['name']; ?></h2>
+          <a class="btn btn-success" href="./space/<?php echo $this->data['space']['idSpace'] ?>" role="button">See space details</a>
       </div> 
     </div>
 	
 	
     <div class="container">
-      <div> 
-      	<?php 	
-        	$idSpace = $this->data['space']['idSpace'];
-        	$sql = "SELECT * FROM photo WHERE idSpace = :idSpace LIMIT 1";
-        	try {
-            $db = getConnection();
-            $stmt = $db->prepare($sql);
-            $stmt->bindParam(":idSpace", $idSpace);
-            $stmt->execute();
-            $photo = $stmt->fetch();
-            $db = null; 
-            if($photo) echo '<img src="uploads/'.$photo["url"].'" alt="'.$photo["url"].'"width="500">';
-        	}
-          catch(PDOException $e) {
-          }	
-      	?>
-      </div >
-      <?php if(intval($this->data['space']['idOwner']) == intval($_SESSION['userID'])) { ?>
-        <h3> Membership Requests </h3> 
-        <ol>
-          <?php 
-            $myMembers = getSpaceRequests($this->data['space']['idSpace']);
-            $count = 0;
-            foreach ($myMembers as $member) {
-              $count++;
-              echo "<li id='request".$member['idUser']."'> <a href='./user/".$member['idUser']."' id='userName".$member['idUser']."'>".$member["name"]."</a> <a href='space/".$this->data['space']['idSpace']."/requestmembership/".$member['idUser']."/accept' user-id='".$member['idUser']."' class='acceptRequest'>Accept</a> | <a href='space/".$this->data['space']['idSpace']."/requestmembership/".$member['idUser']."' user-id='".$member['idUser']."' class='rejectRequest'>Reject</a>  </li>";
-            }
-            if($count==0) echo "<li>There is no request</li>";
-          ?>
-        </ol>
-      <?php } ?>
-
-      <h3> Members </h3> 
-      <ol id="spaceMembers">
-        <?php echo "<li><a href='./user/".$this->data['space']['idOwner']."'>".getUserById($this->data['space']['idOwner'])['name']."</a></li>";?>
-        <?php 
-        	$myMembers = getSpaceMembers($this->data['space']['idSpace']);
-          foreach ($myMembers as $member) {
-            echo "<li> <a href='./user/".$member['idUser']."'>".$member["name"]."</a></li>";
-        	}
-        ?>
-      </ol>
-
-      <?php if(userIsMemberOfSpace($_SESSION['userID'], $this->data['space']['idSpace'])) { ?>
-      <h3> Teams </h3> 
-      <ol id="spaceTeams">
-        <?php 
-          $teams = getSpaceTeams($this->data['space']['idSpace']);
-          foreach ($teams as $team) {
-            echo "<li> <a href='./space/".$this->data['space']['idSpace']."/team/".$team['idTeam']."'>".$team["name"]."</a></li>";
-          }
-        ?>
-        <li><a href="./space/<?php echo $this->data['space']['idSpace'] ?>/teams/new">New team</a></li>
-      </ol>
-      <?php } ?>
+     
     </div> <!-- /container -->
 
 
